@@ -1,0 +1,13 @@
+{
+  "name": "kat-ing",
+  "version": "0.0.0",
+  "description": "Got gif.",
+  "main": "app.js",
+  "repository": "",
+  "author": "Mark Dell <madelk@gmail.com>",
+  "dependencies": {
+    "express": "^4.14.0",
+    "google-auth-library": "^0.9.9",
+    "googleapis": "^14.1.0"
+  }
+}
