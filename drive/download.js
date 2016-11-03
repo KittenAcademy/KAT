@@ -36,7 +36,7 @@ module.exports = function(fileid, callback) {
 }
 
 
-
+//TODO: check how old existing file is before pulling from cahce
 
 function download(fileId, auth, callback) {
     var drive = google.drive({

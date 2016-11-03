@@ -6,6 +6,7 @@ var auth = require('./driveauth.js');
  * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
  */
 
+//TODO: Cache the file list
 
 
 module.exports = function(callback) {
