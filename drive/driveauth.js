@@ -16,9 +16,8 @@ var SCOPES = [
 ];
 
 
-var TOKEN_DIR = (process.env.HOME || process.env.HOMEPATH ||
-    process.env.USERPROFILE) + '/.credentials/';
-var TOKEN_PATH = TOKEN_DIR + 'drive-nodejs-quickstart.json';
+var TOKEN_DIR = './';
+var TOKEN_PATH = TOKEN_DIR + 'drivetoken.json';
 
 //TODO: Cache the auth token
 
