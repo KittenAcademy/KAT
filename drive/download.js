@@ -19,10 +19,17 @@ var google = require('googleapis');
 var auth = require('./driveauth.js');
 var path = require('path');
 
+
+var dir = '/cache';
+
+if (!fs.existsSync(dir)){
+    fs.mkdirSync(dir);
+}
+
 module.exports = function(fileid, callback) {
     auth(function(auth) {
         
-        var filepath = 'cache/'+fileid+'.gif';
+        var filepath = dir+'/'+fileid+'.gif';
         fs.exists(filepath, function(exists) { 
           if (exists) { 
               callback(fileid);
@@ -54,7 +61,7 @@ function download(fileId, auth, callback) {
         }
 
         console.log('Downloading %s...', metadata.name);
-        var filepath = 'cache/'+fileId+'.gif';
+        var filepath = dir+'/'+fileId+'.gif';
 
         var dest = fs.createWriteStream(filepath);
 
