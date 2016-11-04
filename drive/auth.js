@@ -20,9 +20,12 @@ var TOKEN_PATH = TOKEN_DIR + 'drive-nodejs-quickstart.json';
 function GetOauth2Client(callback) {
   fs.readFile('drive/client_secret.json', function processClientSecrets(err, content) {
     if (err) {
-      
-      callback({success: false, message: 'Error loading client secret file: ' + err});
-      return;
+      if (process.env.ClientSecret) {
+        content = process.env.ClientSecret;
+      } else {
+        callback({success: false, message: 'Error loading client secret file: ' + err});
+        return;
+      }
     }
     // Authorize a client with the loaded credentials, then call the
     // Drive API.
