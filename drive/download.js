@@ -20,7 +20,7 @@ var auth = require('./driveauth.js');
 var path = require('path');
 
 
-var dir = '/cache';
+var dir = './cache';
 
 if (!fs.existsSync(dir)){
     fs.mkdirSync(dir);
