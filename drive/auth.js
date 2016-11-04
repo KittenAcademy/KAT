@@ -50,7 +50,7 @@ module.exports.GetAuthURL = function(callback) {
       access_type: 'offline',
       scope: SCOPES
     });
-    callback({success: false, message: authUrl});
+    callback({success: true, message: authUrl});
   });
 };
 

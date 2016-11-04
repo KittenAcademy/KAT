@@ -35,8 +35,12 @@ function BeginAuth(callback){
     // Load client secrets from a local file.
     fs.readFile('drive/client_secret.json', function processClientSecrets(err, content) {
       if (err) {
-        console.log('Error loading client secret file: ' + err);
-        return;
+        if (process.env.ClientSecret) {
+          content = process.env.ClientSecret;
+        } else {
+          callback({success: false, message: 'Error loading client secret file: ' + err});
+          return;
+        }
       }
       // Authorize a client with the loaded credentials, then call the
       // Drive API.
