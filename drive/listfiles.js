@@ -41,7 +41,7 @@ function listFiles(auth, callback) {
         auth: auth,
         q: "mimeType = 'image/gif' and '0BwoBPbVKwbI9TUdFSG0yRjh5UTQ' in parents",
         //https://developers.google.com/drive/v3/reference/files/list#try-it https://developers.google.com/drive/v3/web/search-parameters
-        pageSize: 10,
+        pageSize: 1000,
         fields: "nextPageToken, files(id, name)"
     }, function(err, response) {
         if (err) {
