@@ -38,6 +38,7 @@ function BeginAuth(callback){
         if (process.env.ClientSecret) {
           content = process.env.ClientSecret;
         } else {
+          console.log('Error loading client secret file', err)
           callback({success: false, message: 'Error loading client secret file: ' + err});
           return;
         }
@@ -69,6 +70,7 @@ function authorize(credentials, callback) {
   // Check if we have previously stored a token.
   fs.readFile(TOKEN_PATH, function(err, token) {
     if (err || Object.keys(token).length === 0) {
+      console.log('err when reading token', err);
       //getNewToken(oauth2Client, callback);
     } else {
       oauth2Client.credentials = JSON.parse(token);
@@ -120,6 +122,7 @@ function storeToken(token) {
     fs.mkdirSync(TOKEN_DIR);
   } catch (err) {
     if (err.code != 'EEXIST') {
+      console.log('err when storing token', err)
       throw err;
     }
   }
@@ -134,11 +137,13 @@ function GetCache(){
     if (Cache.expires > new Date().getTime()){
         return Cache.value;
     } else {
+  console.log('no token in cache')
         return null;
     }
 }
 
 function AddCache(value){
+  console.log('adding token to cache', value)
     Cache.value = value;
     Cache.expires = new Date().addHours(1).getTime();
 }
