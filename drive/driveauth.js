@@ -7,6 +7,8 @@ var googleAuth = require('google-auth-library');
 // If modifying these scopes, delete your previously saved credentials
 // at ~/.credentials/drive-nodejs-quickstart.json
 
+//TODO: this needs to work through a web page as the console will not be available for input when hosted
+
 var SCOPES = [
   'https://www.googleapis.com/auth/drive.metadata.readonly',
   'https://www.googleapis.com/auth/drive.photos.readonly',
@@ -19,6 +21,15 @@ var TOKEN_DIR = (process.env.HOME || process.env.HOMEPATH ||
 var TOKEN_PATH = TOKEN_DIR + 'drive-nodejs-quickstart.json';
 
 //TODO: Cache the auth token
+
+module.exports = function(callback) {
+  var cache = GetCache();
+  if (cache){
+    callback(cache);
+    return;
+  }
+    BeginAuth(callback);
+}
 
 function BeginAuth(callback){
     // Load client secrets from a local file.
@@ -36,9 +47,6 @@ function BeginAuth(callback){
     });
 }
 
-module.exports = function(callback) {
-    BeginAuth(callback);
-}
 
 /**
  * Create an OAuth2 client with the given credentials, and then execute the
@@ -56,8 +64,8 @@ function authorize(credentials, callback) {
 
   // Check if we have previously stored a token.
   fs.readFile(TOKEN_PATH, function(err, token) {
-    if (err) {
-      getNewToken(oauth2Client, callback);
+    if (err || Object.keys(token).length === 0) {
+      //getNewToken(oauth2Client, callback);
     } else {
       oauth2Client.credentials = JSON.parse(token);
       callback(oauth2Client);
@@ -93,6 +101,7 @@ function getNewToken(oauth2Client, callback) {
       oauth2Client.credentials = token;
       storeToken(token);
       callback(oauth2Client);
+      AddCache(oauth2Client);
     });
   });
 }
@@ -112,4 +121,25 @@ function storeToken(token) {
   }
   fs.writeFile(TOKEN_PATH, JSON.stringify(token));
   console.log('Token stored to ' + TOKEN_PATH);
+}
+
+
+var Cache = new Object();
+
+function GetCache(){
+    if (Cache.expires > new Date().getTime()){
+        return Cache.value;
+    } else {
+        return null;
+    }
+}
+
+function AddCache(value){
+    Cache.value = value;
+    Cache.expires = new Date().addHours(1).getTime();
+}
+
+Date.prototype.addHours= function(h){
+    this.setHours(this.getHours()+h);
+    return this;
 }

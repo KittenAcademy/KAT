@@ -22,7 +22,7 @@ var path = require('path');
 module.exports = function(fileid, callback) {
     auth(function(auth) {
         
-        var filepath = 'temp/'+fileid;
+        var filepath = 'cache/'+fileid+'.gif';
         fs.exists(filepath, function(exists) { 
           if (exists) { 
               callback(fileid);
@@ -37,6 +37,7 @@ module.exports = function(fileid, callback) {
 
 
 //TODO: check how old existing file is before pulling from cahce
+//TODO: pipe writestream to response instead of downloading image... maybe? Is that bad for API rate limits?
 
 function download(fileId, auth, callback) {
     var drive = google.drive({
@@ -53,7 +54,7 @@ function download(fileId, auth, callback) {
         }
 
         console.log('Downloading %s...', metadata.name);
-        var filepath = 'temp/'+fileId;
+        var filepath = 'cache/'+fileId+'.gif';
 
         var dest = fs.createWriteStream(filepath);
 

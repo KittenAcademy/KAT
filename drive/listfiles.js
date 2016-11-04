@@ -6,7 +6,6 @@ var auth = require('./driveauth.js');
  * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
  */
 
-//TODO: Cache the file list
 
 
 module.exports = function(callback) {
@@ -16,7 +15,27 @@ module.exports = function(callback) {
     })
 }
 
+var Cache = new Object();
+
+function GetCache(){
+    if (Cache.expires > new Date().getTime()){
+        return Cache.value;
+    } else {
+        return null;
+    }
+}
+
+function AddCache(value){
+    Cache.value = value;
+    Cache.expires = new Date().addHours(1).getTime();
+}
+
 function listFiles(auth, callback) {
+    var cache = GetCache();
+    if (cache){
+        callback(cache);
+        return;
+    }
     var service = google.drive('v3');
     service.files.list({
         auth: auth,
@@ -40,6 +59,12 @@ function listFiles(auth, callback) {
             //     console.log('%s (%s)', file.name, file.id);
             //   }
             callback(files);
+            AddCache(files);
         }
     });
+}
+
+Date.prototype.addHours= function(h){
+    this.setHours(this.getHours()+h);
+    return this;
 }
