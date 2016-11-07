@@ -27,17 +27,15 @@ module.exports.GetCache = function(key, callback) {
     });
     query.findOne(function(err, found) {
         if (err) {
-            callback({
-                err: err
-            });
+            callback({err, '' });
             return;
         };
         if (found) {
-            callback(found.value);
+            callback('', found.value);
             return;
         }
         else {
-            callback(null);
+            callback('cache value: "' + key+ '" not found' , null);
             return;
         }
     });
