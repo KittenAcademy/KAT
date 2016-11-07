@@ -27,7 +27,7 @@ module.exports.GetCache = function(key, callback) {
     });
     query.findOne(function(err, found) {
         if (err) {
-            callback({err, '' });
+            callback(err, '' );
             return;
         };
         if (found) {
