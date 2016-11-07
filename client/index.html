@@ -44,7 +44,7 @@
 
     <div class="jumbotron">
       <h1>Gifs.Kitten.Academy</h1>
-      <p><img id="thegif" src="https://www.battleforthenet.com/images/change_avatar/avatar-cat.gif" class="img-responsive" style="width:100%"></img>
+      <p><a id="thegiflink" href="#" target="_blank"><img id="thegif" src="https://www.battleforthenet.com/images/change_avatar/avatar-cat.gif" class="img-responsive" style="margin-left: auto; margin-right: auto;"></img></a>
       </p>
     </div>
     <!--<iframe width="100%" height="100" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/92107640&amp;auto_play=true&amp;hide_related=true&amp;show_comments=false&amp;show_user=false&amp;show_reposts=false&amp;visual=false"></iframe>-->
@@ -73,6 +73,7 @@
     function ChangeImage() {
         $.getJSON( "/getgifids", function( data ) {
             $('#thegif').attr('src', data[0]);
+            $('#thegiflink').attr('href', data[0]);
             $('#thenextgif').attr('src', data[1]);
             $('#thenextnextgif').attr('src', data[2]);
         });
