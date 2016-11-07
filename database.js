@@ -13,9 +13,9 @@ var connectString = 'mongodb://' + dbuser + ':' + dbpass + '@ds0' + dbinstance +
 mongoose.connect(connectString);
 
 var cacheSchemea = mongoose.Schema({
-    dateAdded: Number,
+    dateAdded: Date,
     key: String,
-    value: String
+    value: mongoose.Schema.Types.Mixed,
 })
 
 var GifCache = mongoose.model('gifcache', cacheSchemea)
