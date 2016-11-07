@@ -17,7 +17,7 @@ var TOKEN_PATH = TOKEN_DIR + 'drivetoken.json';
 //TODO: Cache the auth token
 
 function GetOauth2Client(callback) {
-  fs.readFile('drive/client_secret.json', function processClientSecrets(err, content) {
+  fs.readFile('cache/client_secret.json', function processClientSecrets(err, content) {
     if (err) {
       if (process.env.ClientSecret) {
         content = process.env.ClientSecret;

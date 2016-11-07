@@ -32,7 +32,7 @@ module.exports = function(callback) {
 
 function BeginAuth(callback){
     // Load client secrets from a local file.
-    fs.readFile('drive/client_secret.json', function processClientSecrets(err, content) {
+    fs.readFile('cache/client_secret.json', function processClientSecrets(err, content) {
       if (err) {
         if (process.env.ClientSecret) {
           content = process.env.ClientSecret;
