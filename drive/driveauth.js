@@ -73,7 +73,7 @@ function authorize(credentials, callback) {
     if (err || Object.keys(token).length === 0) {
       console.log('err when reading token', err, 'drivetoken');
     } else {
-      oauth2Client.credentials = JSON.parse(token);
+      oauth2Client.credentials = token;
       callback(oauth2Client);
       AddCache(oauth2Client);
     }
