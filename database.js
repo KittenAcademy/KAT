@@ -62,7 +62,7 @@ module.exports.SetCache = function(key, value, callback) {
     });
 }
 
-module.exports.DeleteAllowedWord = function(key, callback) {
+module.exports.DeleteCache = function(key, callback) {
     GifCache.findOneAndRemove({
         key: key
     }, function(err, doc, result) {

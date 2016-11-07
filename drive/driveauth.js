@@ -3,7 +3,7 @@ var fs = require('fs');
 var readline = require('readline');
 var google = require('googleapis');
 var googleAuth = require('google-auth-library');
-// var database = require('../database.js');
+var database = require('../database.js');
 var path = require('path');
 
 // If modifying these scopes, delete your previously saved credentials
@@ -19,7 +19,7 @@ var SCOPES = [
 
 
 // var TOKEN_DIR = './cache';
-var TOKEN_PATH =  path.join(__dirname, '..', 'cache', 'drivetoken.json'); //TOKEN_DIR + 'drivetoken.json';
+// var TOKEN_PATH =  path.join(__dirname, '..', 'cache', 'drivetoken.json'); //TOKEN_DIR + 'drivetoken.json';
 
 //TODO: Cache the auth token
 
@@ -69,9 +69,9 @@ function authorize(credentials, callback) {
   var oauth2Client = new auth.OAuth2(clientId, clientSecret, redirectUrl);
 
   // Check if we have previously stored a token.
-  fs.readFile(TOKEN_PATH, function(err, token) {
+  database.GetCache('drivetoken', function(err, token) {
     if (err || Object.keys(token).length === 0) {
-      console.log('err when reading token', err, TOKEN_PATH);
+      console.log('err when reading token', err, 'drivetoken');
     } else {
       oauth2Client.credentials = JSON.parse(token);
       callback(oauth2Client);

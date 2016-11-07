@@ -3,7 +3,7 @@ var fs = require('fs');
 var readline = require('readline');
 var google = require('googleapis');
 var googleAuth = require('google-auth-library');
-// var database = require('../database.js');
+var database = require('../database.js');
 var path = require('path');
 
 var SCOPES = [
@@ -13,7 +13,7 @@ var SCOPES = [
 ];
 
 
-var TOKEN_PATH =  path.join(__dirname,'..', 'cache', 'drivetoken.json'); //TOKEN_DIR + 'drivetoken.json';
+// var TOKEN_PATH =  path.join(__dirname,'..', 'cache', 'drivetoken.json'); //TOKEN_DIR + 'drivetoken.json';
 
 //TODO: Cache the auth token
 
@@ -82,6 +82,7 @@ function storeToken(token, callback) {
   //     return;
   //   }
   // }
-  fs.writeFile(TOKEN_PATH, JSON.stringify(token));
-  callback({success: true, message: 'Token stored to ' + TOKEN_PATH});
+  database.SetCache('drivetoken', token, function(result){
+    callback({success: true, message: result});
+  })
 }
