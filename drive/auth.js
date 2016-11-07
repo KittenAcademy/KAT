@@ -3,6 +3,8 @@ var fs = require('fs');
 var readline = require('readline');
 var google = require('googleapis');
 var googleAuth = require('google-auth-library');
+// var database = require('../database.js');
+var path = require('path');
 
 var SCOPES = [
   'https://www.googleapis.com/auth/drive.metadata.readonly',
@@ -11,13 +13,12 @@ var SCOPES = [
 ];
 
 
-var TOKEN_DIR = './';
-var TOKEN_PATH = TOKEN_DIR + 'drivetoken.json';
+var TOKEN_PATH =  path.join(__dirname,'..', 'cache', 'drivetoken.json'); //TOKEN_DIR + 'drivetoken.json';
 
 //TODO: Cache the auth token
 
 function GetOauth2Client(callback) {
-  fs.readFile('cache/client_secret.json', function processClientSecrets(err, content) {
+  fs.readFile('drive/client_secret.json', function processClientSecrets(err, content) {
     if (err) {
       if (process.env.ClientSecret) {
         content = process.env.ClientSecret;
@@ -72,15 +73,15 @@ module.exports.UseCode = function(code, callback) {
 }
 
 function storeToken(token, callback) {
-  try {
-    fs.mkdirSync(TOKEN_DIR);
-  }
-  catch (err) {
-    if (err.code != 'EEXIST') {
-      callback({success: false, message: err});
-    }
-  }
+  // try {
+  //   fs.mkdirSync(TOKEN_DIR);
+  // }
+  // catch (err) {
+  //   if (err.code != 'EEXIST') {
+  //     callback({success: false, message: err});
+  //     return;
+  //   }
+  // }
   fs.writeFile(TOKEN_PATH, JSON.stringify(token));
-  
-      callback({success: true, message: 'Token stored to ' + TOKEN_PATH});
+  callback({success: true, message: 'Token stored to ' + TOKEN_PATH});
 }

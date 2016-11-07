@@ -3,6 +3,8 @@ var fs = require('fs');
 var readline = require('readline');
 var google = require('googleapis');
 var googleAuth = require('google-auth-library');
+// var database = require('../database.js');
+var path = require('path');
 
 // If modifying these scopes, delete your previously saved credentials
 // at ~/.credentials/drive-nodejs-quickstart.json
@@ -16,8 +18,8 @@ var SCOPES = [
 ];
 
 
-var TOKEN_DIR = './';
-var TOKEN_PATH = TOKEN_DIR + 'drivetoken.json';
+// var TOKEN_DIR = './cache';
+var TOKEN_PATH =  path.join(__dirname, '..', 'cache', 'drivetoken.json'); //TOKEN_DIR + 'drivetoken.json';
 
 //TODO: Cache the auth token
 
@@ -32,7 +34,7 @@ module.exports = function(callback) {
 
 function BeginAuth(callback){
     // Load client secrets from a local file.
-    fs.readFile('cache/client_secret.json', function processClientSecrets(err, content) {
+    fs.readFile('drive/client_secret.json', function processClientSecrets(err, content) {
       if (err) {
         if (process.env.ClientSecret) {
           content = process.env.ClientSecret;
