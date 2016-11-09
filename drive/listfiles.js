@@ -42,7 +42,7 @@ function listFiles(auth, callback) {
         q: "mimeType = 'image/gif' and '0BwoBPbVKwbI9TUdFSG0yRjh5UTQ' in parents",
         //https://developers.google.com/drive/v3/reference/files/list#try-it https://developers.google.com/drive/v3/web/search-parameters
         pageSize: 1000,
-        fields: "nextPageToken, files(id, name)"
+        fields: "nextPageToken, files(id, name, description)"
     }, function(err, response) {
         if (err) {
             console.log('The API returned an error: ' + err);
@@ -53,6 +53,11 @@ function listFiles(auth, callback) {
             console.log('No files found.');
         }
         else {
+            for (var i = 0; i < files.length; i++) {
+                var file = files[i];
+                if (!file.description) continue;
+                file.tags = file.description.split('#');
+            }
             //   console.log('Files:');
             //   for (var i = 0; i < files.length; i++) {
             //     var file = files[i];

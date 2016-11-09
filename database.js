@@ -1,9 +1,10 @@
 // HELP: https://www.npmjs.com/package/mongoose
 
 var mongoose = require('mongoose');
-var dbuser = process.env.dbuser;
-var dbpass = process.env.dbpass;
-var dbinstance = process.env.dbinstance;
+var setting = require('./settings.js')
+var dbuser = setting('dbuser');
+var dbpass = setting('dbpass');
+var dbinstance = setting('dbinstance');
 
 if (!dbpass || !dbuser || !dbinstance) {
     throw ("DB SETTINGS NOT CONFIGURED");

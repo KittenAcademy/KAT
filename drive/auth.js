@@ -5,6 +5,7 @@ var google = require('googleapis');
 var googleAuth = require('google-auth-library');
 var database = require('../database.js');
 var path = require('path');
+var setting = require('../settings.js')
 
 var SCOPES = [
   'https://www.googleapis.com/auth/drive.metadata.readonly',
@@ -18,25 +19,13 @@ var SCOPES = [
 //TODO: Cache the auth token
 
 function GetOauth2Client(callback) {
-  fs.readFile('drive/client_secret.json', function processClientSecrets(err, content) {
-    if (err) {
-      if (process.env.ClientSecret) {
-        content = process.env.ClientSecret;
-      } else {
-        callback({success: false, message: 'Error loading client secret file: ' + err});
-        return;
-      }
-    }
-    // Authorize a client with the loaded credentials, then call the
-    // Drive API.
-    var credentials = JSON.parse(content);
-    var clientSecret = credentials.installed.client_secret;
-    var clientId = credentials.installed.client_id;
-    var redirectUrl = credentials.installed.redirect_uris[0];
-    var auth = new googleAuth();
-    var oauth2Client = new auth.OAuth2(clientId, clientSecret, redirectUrl);
-      callback({success: true, message: oauth2Client});
-  });
+  var credentials = setting('ClientSecret');
+  var clientSecret = credentials.installed.client_secret;
+  var clientId = credentials.installed.client_id;
+  var redirectUrl = credentials.installed.redirect_uris[0];
+  var auth = new googleAuth();
+  var oauth2Client = new auth.OAuth2(clientId, clientSecret, redirectUrl);
+  callback({success: true, message: oauth2Client});
 }
 
 module.exports.GetAuthURL = function(callback) {

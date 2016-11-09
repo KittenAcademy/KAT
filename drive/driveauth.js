@@ -5,6 +5,7 @@ var google = require('googleapis');
 var googleAuth = require('google-auth-library');
 var database = require('../database.js');
 var path = require('path');
+var setting = require('../settings.js')
 
 // If modifying these scopes, delete your previously saved credentials
 // at ~/.credentials/drive-nodejs-quickstart.json
@@ -33,23 +34,9 @@ module.exports = function(callback) {
 }
 
 function BeginAuth(callback){
-    // Load client secrets from a local file.
-    fs.readFile('drive/client_secret.json', function processClientSecrets(err, content) {
-      if (err) {
-        if (process.env.ClientSecret) {
-          content = process.env.ClientSecret;
-        } else {
-          console.log('Error loading client secret file', err)
-          callback({success: false, message: 'Error loading client secret file: ' + err});
-          return;
-        }
-      }
-      // Authorize a client with the loaded credentials, then call the
-      // Drive API.
-      authorize(JSON.parse(content), function(auth){
-        //   console.log('driveauth',auth);
-          callback(auth);
-      });
+    authorize(setting('ClientSecret'), function(auth){
+      //   console.log('driveauth',auth);
+        callback(auth);
     });
 }
 
