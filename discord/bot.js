@@ -10,8 +10,9 @@ bot.on('ready', function() {
    console.log(bot.username + " - (" + bot.id + ")", "ready");
 });
 bot.on('message', function(user, userID, channelID, message, event) {
-    if (event.d.author.bot) {return;}
-    if (message[0] == "!"){
+    try {
+        if (event.d.author.bot) {return;}
+        if (!message[0] == "!") {return;}
         var payload = {
             user: user,
             userID: userID, 
@@ -22,8 +23,9 @@ bot.on('message', function(user, userID, channelID, message, event) {
             command: message.split(" ")[1]
         };
         HandleBotCommand(payload);
-    } else {
-        //CheckForOffensiveMessage(payload);
+    }
+    catch (ex){
+        console.error('errorwithbotonmessage', ex)
     }
 });
 
