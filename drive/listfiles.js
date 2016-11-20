@@ -56,7 +56,10 @@ function listFiles(auth, callback) {
             for (var i = 0; i < files.length; i++) {
                 var file = files[i];
                 if (!file.description) continue;
-                file.tags = file.description.split('#');
+                //file.tags = file.description.ToLower().split('#');
+                file.tags = file.description.split("#").map(function(item) {
+                    return item.trim().toLowerCase();
+                });
             }
             //   console.log('Files:');
             //   for (var i = 0; i < files.length; i++) {

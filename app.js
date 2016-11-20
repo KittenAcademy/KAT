@@ -5,10 +5,11 @@
 //
 var http = require('http');
 var path = require('path');
-
+var discord = require('./discord/bot.js')
 var driveauth = require('./drive/auth.js');
 var express = require('express');
 var randomgif = require('./drive/randomgif.js');
+var findfile = require('./drive/findfile.js');
 
 var app = express();
 var server = http.createServer(app);
@@ -25,6 +26,11 @@ app.get('/AuthUseCode', function(req, res) {
 })
 app.get('/getgifids', function(req, res) {
     res.json(randomgif());
+})
+app.get('/find', function(req, res) {
+    findfile(req.query.text, function(filename){
+        res.json(filename);
+    });
 })
 app.use('/', express.static(__dirname + '/client'));
 app.use('/gifs', express.static(__dirname + '/cache', { maxAge: 86400000 }));
