@@ -1,16 +1,25 @@
 'use strict';
 var listfiles = require('./listfiles.js');
+var download = require('./download.js');
 
 module.exports = function(stringToFind, callback){
     listfiles(function (filelist){
         var filtered = filterXwhereYhasZ(filelist, 'tags', stringToFind)
         if (filtered.length > 0){
-            var file = getRandomFile(filtered);
-            callback({path:'/gifs/'+file.id+'.gif',name:file.name});
+            filesFound(filtered, callback);
             return;
         }
         filtered = filterXwhereYhasZ(filelist, 'name', stringToFind)
-        var file = getRandomFile(filtered);
+        if (filtered.length > 0){
+            filesFound(filtered, callback);
+            return;
+        }
+    });
+}
+
+function filesFound(files, callback){
+    var file = getRandomFile(files);
+    download(file.id, function(downloadedID) {
         callback({path:'/gifs/'+file.id+'.gif',name:file.name});
     });
 }
