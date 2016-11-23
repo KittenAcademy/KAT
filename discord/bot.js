@@ -45,10 +45,10 @@ bot.on('disconnected', function() {
 
 function HandleBotCommand(payload){
     if (payload.moduleName == "gif"){
-        findfile(payload.command, function(filename){
+        findfile(payload.command, function(file){
             bot.sendMessage({
                 to: payload.channelID,
-                message: "https://kagifs.herokuapp.com"+filename
+                message: "Here you go " +payload.user+" I found " + file.name + ": https://kagifs.herokuapp.com"+file.path
             });
         });
     }

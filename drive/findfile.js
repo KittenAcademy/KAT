@@ -5,11 +5,13 @@ module.exports = function(stringToFind, callback){
     listfiles(function (filelist){
         var filtered = filterXwhereYhasZ(filelist, 'tags', stringToFind)
         if (filtered.length > 0){
-        callback('/gifs/'+getRandomFile(filtered).id+'.gif');
+            var file = getRandomFile(filtered);
+            callback({path:'/gifs/'+file.id+'.gif',name:file.name});
             return;
         }
         filtered = filterXwhereYhasZ(filelist, 'name', stringToFind)
-        callback('/gifs/'+getRandomFile(filtered).id+'.gif');
+        var file = getRandomFile(filtered);
+        callback({path:'/gifs/'+file.id+'.gif',name:file.name});
     });
 }
 
