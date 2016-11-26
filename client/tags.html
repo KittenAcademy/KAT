@@ -61,7 +61,7 @@
   <!-- Include all compiled plugins (below), or include individual files as needed -->
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
   <script>
-    $.getJSON( "/find/?text="+GetQueryStringParams("tag"), function( data ) {
+    $.getJSON( "/tags/?text="+GetQueryStringParams("tag"), function( data ) {
         console.log(data)
         for (var i = 0; i < data.length; i++) {
          var imageURL = '/gifs/' +data[i].id  +'.gif';
