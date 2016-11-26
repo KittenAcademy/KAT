@@ -22,25 +22,26 @@ var path = require('path');
 
 var dir = './cache';
 
-if (!fs.existsSync(dir)){
+if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir);
 }
 
 module.exports = function(fileid, callback) {
-    
-              callback(fileid);
-              return;
+
+    callback(fileid);
+    return;
     auth(function(auth) {
-        
-        var filepath = dir+'/'+fileid+'.gif';
-        fs.exists(filepath, function(exists) { 
-          if (exists) { 
-              callback(fileid);
-            // do something 
-          } else {
+
+        var filepath = dir + '/' + fileid + '.gif';
+        fs.exists(filepath, function(exists) {
+            if (exists) {
+                callback(fileid);
+                // do something 
+            }
+            else {
                 download(fileid, auth, callback);
-          }
-        }); 
+            }
+        });
         // console.log('download',auth);
     })
 }
@@ -64,7 +65,7 @@ function download(fileId, auth, callback) {
         }
 
         console.log('Downloading %s...', metadata.name);
-        var filepath = dir+'/'+fileId+'.gif';
+        var filepath = dir + '/' + fileId + '.gif';
 
         var dest = fs.createWriteStream(filepath);
 

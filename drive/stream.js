@@ -21,15 +21,15 @@ var path = require('path');
 
 var dir = './cache';
 
-if (!fs.existsSync(dir)){
+if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir);
 }
 
-module.exports= function(req, res){
+module.exports = function(req, res) {
     auth(function(auth) {
-        
-        download(req.url.replace('/gifs/','').replace('.gif',''), auth, res)
-        // console.log('download',auth);
+
+        download(req.url.replace('/gifs/', '').replace('.gif', ''), auth, res)
+            // console.log('download',auth);
     })
 }
 
@@ -58,7 +58,13 @@ function download(fileId, auth, res) {
                 // process.exit();
             })
             .pipe(res);
+        res.oldWriteHead = res.writeHead;
+        res.writeHead = function(statusCode, reasonPhrase, headers) {
+            res.header('Cache-Control', 'max-age=86400, public');
+            res.header('Content-Disposition', 'inline; filename="KA_' + fileId + '.gif"');
 
+            res.oldWriteHead(statusCode, reasonPhrase, headers);
+        }
         res
             .on('finish', function() {
                 //console.log('Downloaded %s!', metadata.name);

@@ -16,12 +16,12 @@ var app = express();
 var server = http.createServer(app);
 
 app.get('/AuthGetURL', function(req, res) {
-    driveauth.GetAuthURL(function(response){
+    driveauth.GetAuthURL(function(response) {
         res.json(response);
     })
 })
 app.get('/AuthUseCode', function(req, res) {
-    driveauth.UseCode(req.query.code, function(response){
+    driveauth.UseCode(req.query.code, function(response) {
         res.json(response);
     })
 })
@@ -29,12 +29,12 @@ app.get('/getgifids', function(req, res) {
     res.json(randomgif());
 })
 app.get('/find', function(req, res) {
-    findfile(req.query.text, function(filename){
+    findfile(req.query.text, function(filename) {
         res.json(filename);
     });
 })
 app.get('/tags', function(req, res) {
-    findfile(req.query.text, function(files){
+    findfile(req.query.text, function(files) {
         res.json(files);
     }, false);
 })

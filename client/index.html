@@ -42,17 +42,20 @@
   <div class="container" style="margin-bottom:75px;">
 
 
-      <h1>Gifs.Kitten.Academy</h1>
+    <h1>Gifs.Kitten.Academy</h1>
     <div class="jumbotron">
       <h1 id="name" style="text-transform: capitalize;"></h1>
-      <p><a id="thegiflink" href="#" target="_blank"><img id="thegif" src="https://www.battleforthenet.com/images/change_avatar/avatar-cat.gif" class="img-responsive" style="margin-left: auto; margin-right: auto;"></img></a></p>
+      <p>
+        <a id="thegiflink" href="#" target="_blank"><img id="thegif" src="https://www.battleforthenet.com/images/change_avatar/avatar-cat.gif" class="img-responsive" style="margin-left: auto; margin-right: auto;"></img>
+        </a>
+      </p>
       <p id="tags" style="text-transform: lowercase;"></p>
     </div>
     <!--<iframe width="100%" height="100" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/92107640&amp;auto_play=true&amp;hide_related=true&amp;show_comments=false&amp;show_user=false&amp;show_reposts=false&amp;visual=false"></iframe>-->
   </div>
 
 
-  <nav class="navbar navbar-inverse navbar-fixed-bottom" >
+  <nav class="navbar navbar-inverse navbar-fixed-bottom">
     <div class="container-fluid">
       <p class="navbar-text"><a href="https://bitbucket.org/madelk/kat-hing" class="navbar-link">Source Available at Bitbucket</a></p>
       <p class="navbar-text navbar-right"><a href="https://about.me/markdell" class="navbar-link">by madelk</a></p>
@@ -64,30 +67,32 @@
   <!-- Include all compiled plugins (below), or include individual files as needed -->
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
   <script>
-    function Loop(){
-            ChangeImage();
-                setTimeout(function() {
-            Loop();
-                }, 10000);
+    function Loop() {
+      ChangeImage();
+      setTimeout(function() {
+        Loop();
+      }, 10000);
     }
-  
+
     function ChangeImage() {
-        $.getJSON( "/getgifids", function( data ) {
-            $('#thegif').attr('src', data[0].filePath);
-            $('#thegiflink').attr('href', data[0].filePath);
-            $('#name').text(data[0].name.replace(/_/g, ' ').replace('.gif', ''));
-            if (data[0].tags){
-              $('#tags').text(data[0].tags.join('#'));
-            } else {
-              $('#tags').text('');
-            }
-            $('#thenextgif').attr('src', data[1].filePath);
-            $('#thenextnextgif').attr('src', data[2].filePath);
-        });
+      $.getJSON("/getgifids", function(data) {
+        $('#thegif').attr('src', data[0].filePath);
+        $('#thegiflink').attr('href', data[0].filePath);
+        $('#name').text(data[0].name.replace(/_/g, ' ').replace('.gif', ''));
+        if (data[0].tags) {
+          $('#tags').text(data[0].tags.join('#'));
+        }
+        else {
+          $('#tags').text('');
+        }
+        $('#thenextgif').attr('src', data[1].filePath);
+        $('#thenextnextgif').attr('src', data[2].filePath);
+      });
     };
     Loop();
   </script>
 </body>
 <img id="thenextgif" src="#" class="img-responsive" style="width:0;height:0"></img>
 <img id="thenextnextgif" src="#" class="img-responsive" style="width:0;height:0"></img>
+
 </html>

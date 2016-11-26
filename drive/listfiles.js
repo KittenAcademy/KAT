@@ -17,22 +17,23 @@ module.exports = function(callback) {
 
 var Cache = new Object();
 
-function GetCache(){
-    if (Cache.expires > new Date().getTime()){
+function GetCache() {
+    if (Cache.expires > new Date().getTime()) {
         return Cache.value;
-    } else {
+    }
+    else {
         return null;
     }
 }
 
-function AddCache(value){
+function AddCache(value) {
     Cache.value = value;
     Cache.expires = new Date().addHours(1).getTime();
 }
 
 function listFiles(auth, callback) {
     var cache = GetCache();
-    if (cache){
+    if (cache) {
         callback(cache);
         return;
     }
@@ -72,7 +73,7 @@ function listFiles(auth, callback) {
     });
 }
 
-Date.prototype.addHours= function(h){
-    this.setHours(this.getHours()+h);
+Date.prototype.addHours = function(h) {
+    this.setHours(this.getHours() + h);
     return this;
 }
