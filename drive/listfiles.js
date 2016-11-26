@@ -33,10 +33,10 @@ function AddCache(value) {
 
 function listFiles(auth, callback) {
     var cache = GetCache();
-    if (cache) {
-        callback(cache);
-        return;
-    }
+    // if (cache) {
+    //     callback(cache);
+    //     return;
+    // }
     var service = google.drive('v3');
     service.files.list({
         auth: auth,
@@ -56,6 +56,7 @@ function listFiles(auth, callback) {
         else {
             for (var i = 0; i < files.length; i++) {
                 var file = files[i];
+                file.name = file.name.toLowerCase();
                 if (!file.description) continue;
                 //file.tags = file.description.ToLower().split('#');
                 file.tags = file.description.split("#").map(function(item) {

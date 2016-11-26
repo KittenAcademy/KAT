@@ -34,6 +34,7 @@ function filesFound(files, callback, getone) {
 }
 
 function filterXwhereYhasZ(x, y, z) {
+    z = z.toLowerCase();
     return x.filter(function(xa) {
         if (xa[y] !== undefined)
             if (Array.isArray(xa[y])) {
