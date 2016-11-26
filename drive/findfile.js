@@ -3,7 +3,7 @@ var listfiles = require('./listfiles.js');
 var download = require('./download.js');
 
 module.exports = function(stringToFind, callback, getone){
-    if (!getone) getone = false;
+    if (getone === undefined) getone = true;
     listfiles(function (filelist){
         var filtered = filterXwhereYhasZ(filelist, 'tags', stringToFind)
         if (filtered.length > 0){

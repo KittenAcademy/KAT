@@ -22,7 +22,7 @@ bot.on('ready', function() {
 bot.on('message', function(user, userID, channelID, message, event) {
     try {
         if (event.d.author.bot) {return;}
-        if (!message[0] == "!") {return;}
+        if (message[0] != "!") {return;}
         var payload = {
             user: user,
             userID: userID, 
