@@ -19,37 +19,21 @@ var google = require('googleapis');
 var auth = require('./driveauth.js');
 var path = require('path');
 
-
 var dir = './cache';
 
 if (!fs.existsSync(dir)){
     fs.mkdirSync(dir);
 }
 
-module.exports = function(fileid, callback) {
-    
-              callback(fileid);
-              return;
+module.exports= function(req, res){
     auth(function(auth) {
         
-        var filepath = dir+'/'+fileid+'.gif';
-        fs.exists(filepath, function(exists) { 
-          if (exists) { 
-              callback(fileid);
-            // do something 
-          } else {
-                download(fileid, auth, callback);
-          }
-        }); 
+        download(req.url.replace('/gifs/','').replace('.gif',''), auth, res)
         // console.log('download',auth);
     })
 }
 
-
-//TODO: check how old existing file is before pulling from cahce
-//TODO: pipe writestream to response instead of downloading image... maybe? Is that bad for API rate limits?
-
-function download(fileId, auth, callback) {
+function download(fileId, auth, res) {
     var drive = google.drive({
         version: 'v3',
         auth: auth
@@ -63,10 +47,7 @@ function download(fileId, auth, callback) {
             // return process.exit();
         }
 
-        console.log('Downloading %s...', metadata.name);
-        var filepath = dir+'/'+fileId+'.gif';
 
-        var dest = fs.createWriteStream(filepath);
 
         drive.files.get({
                 fileId: fileId,
@@ -76,12 +57,11 @@ function download(fileId, auth, callback) {
                 console.log('Error downloading file', err);
                 // process.exit();
             })
-            .pipe(dest);
+            .pipe(res);
 
-        dest
+        res
             .on('finish', function() {
-                console.log('Downloaded %s!', metadata.name);
-                callback(fileId);
+                //console.log('Downloaded %s!', metadata.name);
                 // process.exit();
             })
             .on('error', function(err) {

@@ -10,6 +10,7 @@ var driveauth = require('./drive/auth.js');
 var express = require('express');
 var randomgif = require('./drive/randomgif.js');
 var findfile = require('./drive/findfile.js');
+var streamgif = require('./drive/stream.js');
 
 var app = express();
 var server = http.createServer(app);
@@ -38,7 +39,7 @@ app.get('/tags', function(req, res) {
     }, false);
 })
 app.use('/', express.static(__dirname + '/client'));
-app.use('/gifs', express.static(__dirname + '/cache', { maxAge: 86400000 }));
+app.get('/gifs/*', streamgif);
 
 
 // app.use('/', express.static(path.resolve(__dirname, 'client')));

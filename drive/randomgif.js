@@ -3,7 +3,8 @@ var download = require('./download.js');
 
 var UpcomingFiles = new Array();
 
-function GetFiles(){
+function GetFiles(cantloop){
+    if (!cantloop) cantloop = false;
     listfiles(function(files) {
         var fileNumber = random(files.length);
         var file = files[fileNumber];
@@ -13,8 +14,8 @@ function GetFiles(){
         //     return;
         // } 
         download(file.id, function(downloadedID) {
-            if (UpcomingFiles.length < 3) {
-                GetFiles();
+            if (UpcomingFiles.length < 3 && !cantloop) {
+                GetFiles(true);
             } else {
                 UpcomingFiles.splice(0,1);
             }
