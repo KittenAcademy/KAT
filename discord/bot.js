@@ -50,6 +50,13 @@ bot.on('disconnected', function() {
 function HandleBotCommand(payload) {
     if (payload.moduleName == "gif") {
         findfile(payload.command, function(file) {
+            if (!file){
+                bot.sendMessage({
+                    to: payload.channelID,
+                    message: "Sorry " + payload.user + " I dunno lol ¯\\_(ツ)_/¯"
+                });
+                return;
+            }
             bot.sendMessage({
                 to: payload.channelID,
                 message: "Here you go " + payload.user + " I found " + file.name + ": https://kagifs.herokuapp.com" + file.path
