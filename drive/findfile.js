@@ -5,19 +5,37 @@ var download = require('./download.js');
 module.exports = function(stringToFind, callback, getone) {
     if (getone === undefined) getone = true;
     listfiles(function(filelist) {
-        var filtered = filterXwhereYhasZ(filelist, 'tags', stringToFind)
+        var filteredTags = filterXwhereYhasZ(filelist, 'tags', stringToFind);
+        var filteredNames = filterXwhereYhasZ(filelist, 'name', stringToFind);
+        
+        var filtered = new Array();
+        // filtered.concat(filteredNames, filteredTags);
+        Array.prototype.push.apply(filtered, filteredNames);
+        Array.prototype.push.apply(filtered, filteredTags);
+
         if (filtered.length > 0) {
-            filesFound(filtered, callback, getone);
-            return;
-        }
-        filtered = filterXwhereYhasZ(filelist, 'name', stringToFind)
-        if (filtered.length > 0) {
-            filesFound(filtered, callback, getone);
+            filesFound(removeDuplicates(filtered, 'id'), callback, getone);
             return;
         }
         callback(null);
     });
 }
+
+function removeDuplicates(arr, prop) {
+     var new_arr = [];
+     var lookup  = {};
+ 
+     for (var i in arr) {
+         lookup[arr[i][prop]] = arr[i];
+     }
+ 
+     for (i in lookup) {
+         new_arr.push(lookup[i]);
+     }
+ 
+     return new_arr;
+ }
+ 
 
 function filesFound(files, callback, getone) {
     if (!getone) {

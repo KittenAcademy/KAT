@@ -28,7 +28,7 @@ function GetCache() {
 
 function AddCache(value) {
     Cache.value = value;
-    Cache.expires = new Date().addHours(1).getTime();
+    Cache.expires = new Date().addMinutes(10).getTime();
 }
 
 function listFiles(auth, callback) {
@@ -74,7 +74,7 @@ function listFiles(auth, callback) {
     });
 }
 
-Date.prototype.addHours = function(h) {
-    this.setHours(this.getHours() + h);
+Date.prototype.addMinutes = function(m) {
+    this.setMinutes(this.getMinutes() + m);
     return this;
 }
