@@ -2,22 +2,28 @@
 var listfiles = require('./listfiles.js');
 var download = require('./download.js');
 
-module.exports = function(stringToFind, callback){
+module.exports = function(stringToFind, callback, getone){
+    if (!getone) getone = false;
     listfiles(function (filelist){
         var filtered = filterXwhereYhasZ(filelist, 'tags', stringToFind)
         if (filtered.length > 0){
-            filesFound(filtered, callback);
+            filesFound(filtered, callback, getone);
             return;
         }
         filtered = filterXwhereYhasZ(filelist, 'name', stringToFind)
         if (filtered.length > 0){
-            filesFound(filtered, callback);
+            filesFound(filtered, callback, getone);
             return;
         }
+        callback(null);
     });
 }
 
-function filesFound(files, callback){
+function filesFound(files, callback, getone){
+    if (!getone) {
+        callback(files);
+        return;
+    }
     var file = getRandomFile(files);
     download(file.id, function(downloadedID) {
         callback({path:'/gifs/'+file.id+'.gif',name:file.name});

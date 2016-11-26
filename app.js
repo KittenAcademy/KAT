@@ -32,6 +32,11 @@ app.get('/find', function(req, res) {
         res.json(filename);
     });
 })
+app.get('/tags', function(req, res) {
+    findfile(req.query.text, function(files){
+        res.json(files);
+    }, false);
+})
 app.use('/', express.static(__dirname + '/client'));
 app.use('/gifs', express.static(__dirname + '/cache', { maxAge: 86400000 }));
 
