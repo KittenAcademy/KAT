@@ -44,7 +44,7 @@ bot.on('disconnected', function() {
 });
 
 function HandleBotCommand(payload){
-    gif (payload.moduleName == "gif"){
+    if (payload.moduleName == "gif"){
         findfile(payload.command, function(file){
             bot.sendMessage({
                 to: payload.channelID,
