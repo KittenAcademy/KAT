@@ -48,7 +48,13 @@ bot.on('disconnected', function() {
 });
 
 function HandleBotCommand(payload) {
-    if (payload.moduleName == "gif") {
+    if (payload.moduleName == "whosefault") {
+        bot.sendMessage({
+            to: payload.channelID,
+            message: "It's DJ's fault. Don't listen to that lier Toonki!"
+        });
+    }
+    else if (payload.moduleName == "gif") {
         findfile(payload.command, function(file) {
             if (!file){
                 bot.sendMessage({
