@@ -27,14 +27,15 @@ bot.on('message', function(user, userID, channelID, message, event) {
         if (message[0] != "!") {
             return;
         }
+        var moduleName = message.split(" ")[0];
         var payload = {
             user: user,
             userID: userID,
             channelID: channelID,
             message: message,
             event: event,
-            moduleName: message.split(" ")[0].replace("!", "").toLowerCase(),
-            command: message.split(" ")[1]
+            moduleName: moduleName.replace("!", "").toLowerCase(),
+            command: message.replace(moduleName, "").substring(1)
         };
         HandleBotCommand(payload);
     }

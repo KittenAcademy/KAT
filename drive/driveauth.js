@@ -80,7 +80,7 @@ function GetCache(){
 }
 
 function AddCache(value){
-  console.log('adding token to cache', value)
+  // console.log('adding token to cache', value)
     Cache.value = value;
     Cache.expires = new Date().addHours(1).getTime();
 }

@@ -2,17 +2,42 @@
 var listfiles = require('./listfiles.js');
 var download = require('./download.js');
 
-module.exports = function(stringToFind, callback, getone) {
+function matchString(stringToFind, filelist){
+    var filtered = new Array();
+    var filteredTags = filterXwhereYhasZ(filelist, 'tags', stringToFind);
+    var filteredNames = filterXwhereYhasZ(filelist, 'name', stringToFind);
+    
+    // filtered.concat(filteredNames, filteredTags);
+    Array.prototype.push.apply(filtered, filteredNames);
+    Array.prototype.push.apply(filtered, filteredTags);
+    return filtered;
+}
+
+var FindFile = function(stringsToFind, callback, getone) {
     if (getone === undefined) getone = true;
     listfiles(function(filelist) {
-        var filteredTags = filterXwhereYhasZ(filelist, 'tags', stringToFind);
-        var filteredNames = filterXwhereYhasZ(filelist, 'name', stringToFind);
-        
         var filtered = new Array();
-        // filtered.concat(filteredNames, filteredTags);
-        Array.prototype.push.apply(filtered, filteredNames);
-        Array.prototype.push.apply(filtered, filteredTags);
-
+        var stringsToFindsplit = stringsToFind.split(" ");
+        if (stringsToFindsplit.length > 0){
+            for (var i = 0; i < stringsToFindsplit.length; i++) {
+                var stringToFind = stringsToFindsplit[i];
+                var arraytouse;
+                if (filtered.length == 0) {
+                    arraytouse = filelist
+                } else {
+                    arraytouse = filtered
+                }
+                var itemsFound = matchString(stringToFind, arraytouse);
+                if (itemsFound.length > 0) {
+                    var filtered = new Array();
+                }
+                Array.prototype.push.apply(filtered, itemsFound);
+            }
+        }
+        else {
+            Array.prototype.push.apply(filtered, matchString(stringsToFind, filelist));
+        }
+        // console.log(filtered, stringsToFind)
         if (filtered.length > 0) {
             filesFound(removeDuplicates(filtered, 'id'), callback, getone);
             return;
@@ -20,6 +45,8 @@ module.exports = function(stringToFind, callback, getone) {
         callback(null);
     });
 }
+
+module.exports = FindFile
 
 function removeDuplicates(arr, prop) {
      var new_arr = [];
@@ -71,3 +98,17 @@ function filterXwhereYhasZ(x, y, z) {
 function getRandomFile(filelist) {
     return filelist[Math.floor(Math.random() * (filelist.length))];
 }
+
+
+// FindFile('harv tetetetete', function(data){
+//     console.log("data",'harv tetetetete', data);
+// })
+// FindFile('harv goofy', function(data){
+//     console.log("data",'harv goofy', data);
+// })
+// FindFile('harv pounce', function(data){
+//     console.log("data",'harv pounce', data);
+// })
+// FindFile('harv', function(data){
+//     console.log("data",'harv', data);
+// })
