@@ -51,7 +51,7 @@ function HandleBotCommand(payload) {
     if (payload.moduleName == "whosefault") {
         bot.sendMessage({
             to: payload.channelID,
-            message: "It's DJ's fault. Don't listen to that lier Toonki!"
+            message: "It's DJ's fault. Don't listen to that liar Toonki!"
         });
     }
     else if (payload.moduleName == "gif") {
