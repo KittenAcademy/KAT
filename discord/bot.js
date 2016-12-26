@@ -47,6 +47,12 @@ bot.on('disconnected', function() {
     console.log("Bot disconnected reconnecting");
     bot.connect();
 });
+bot.on('disconnect', function(erMsg, code) {
+    console.log("Bot disconnected reconnecting");
+    console.log("erMsg", erMsg);
+    console.log("code", code);
+    bot.connect();
+});
 
 function HandleBotCommand(payload) {
     if (payload.moduleName == "whosefault") {
