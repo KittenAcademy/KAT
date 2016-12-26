@@ -6,6 +6,7 @@
   "repository": "",
   "author": "Mark Dell <madelk@gmail.com>",
   "dependencies": {
+    "aws-sdk": "^2.7.19",
     "discord.io": "^2.2.4",
     "express": "^4.14.0",
     "google-auth-library": "^0.9.9",
