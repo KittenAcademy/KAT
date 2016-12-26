@@ -66,7 +66,7 @@ function HandleBotCommand(payload) {
             }
             bot.sendMessage({
                 to: payload.channelID,
-                message: "Here you go " + payload.user + " I found " + file.name + ": https://kagifs.herokuapp.com" + file.path
+                message: "Here you go " + payload.user + " I found " + file.name + ": " + file.path
             });
         });
     }

@@ -1,6 +1,7 @@
 'use strict';
 var listfiles = require('./listfiles.js');
 var download = require('./download.js');
+var gifs = require('../gifs/gifs.js');
 
 function matchString(stringToFind, filelist){
     var filtered = new Array();
@@ -70,12 +71,15 @@ function filesFound(files, callback, getone) {
         return;
     }
     var file = getRandomFile(files);
-    download(file.id, function(downloadedID) {
-        callback({
-            path: '/gifs/' + file.id + '.gif',
-            name: file.name
-        });
+    gifs.GetGifURL(file.id, function(fileurl){
+        callback({path: fileurl, name: file.name})
     });
+    // download(file.id, function(downloadedID) {
+    //     callback({
+    //         path: '/gifs/' + file.id + '.gif',
+    //         name: file.name
+    //     });
+    // });
 }
 
 function filterXwhereYhasZ(x, y, z) {
