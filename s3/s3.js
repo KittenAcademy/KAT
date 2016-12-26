@@ -3,9 +3,9 @@ var s3 = new AWS.S3();
 var stream = require('stream');
 var URL = require('url');
 var setting = require('../settings.js');
-var S3_BUCKET = setting('S3_BUCKET');//'kittenacademy'
-var AWS_ACCESS_KEY_ID = setting('AWS_ACCESS_KEY_ID');//'AKIAJWKOHOIGW54YFUYA'
-var AWS_SECRET_ACCESS_KEY = setting('AWS_SECRET_ACCESS_KEY');//'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'
+var S3_BUCKET = setting('S3_BUCKET');
+var AWS_ACCESS_KEY_ID = setting('AWS_ACCESS_KEY_ID');
+var AWS_SECRET_ACCESS_KEY = setting('AWS_SECRET_ACCESS_KEY');
 process.env['AWS_ACCESS_KEY_ID'] = AWS_ACCESS_KEY_ID;
 process.env['AWS_SECRET_ACCESS_KEY'] = AWS_SECRET_ACCESS_KEY;
 
