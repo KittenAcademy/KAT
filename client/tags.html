@@ -79,13 +79,15 @@
     $.getJSON("/tags/?text=" + GetQueryStringParams("tag"), function(data) {
       for (var i = 0; i < data.length; i++) {
         var imageURL = '/gifs/' + data[i].id + '.gif';
-        var title = (data[0].name.replace(/_/g, ' ').replace('.gif', ''));
+        var title = (data[i].name.replace(/_/g, ' ').replace('.gif', ''));
         var tags = '<ul class="tags">';
         if (data[i].tags) {
           for (var j = 0; j < data[i].tags.length; j++) {
             if (data[i].tags[j])
               tags = tags + '<li><a href="/tags.html?tag=' + data[i].tags[j] + '">' + data[i].tags[j] + '</a></li>';
           }
+        } else {
+          tags = "";
         }
         tags = tags + '</ul>'
         $('#addimageshere').append('<div class="item"><h1 id="name" style="text-transform: capitalize;">' + title + '</h1><img class="lazyOwl" data-src="' + imageURL + '" alt="Lazy Owl Image">' + tags + '</div>')
