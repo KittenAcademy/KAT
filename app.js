@@ -10,7 +10,9 @@ var driveauth = require('./drive/auth.js');
 var express = require('express');
 var randomgif = require('./drive/randomgif.js');
 var findfile = require('./drive/findfile.js');
-var streamgif = require('./drive/stream.js');
+// var streamgif = require('./drive/stream.js');
+
+var gifs = require('./gifs/gifs.js');
 
 var app = express();
 var server = http.createServer(app);
@@ -39,8 +41,13 @@ app.get('/tags', function(req, res) {
     }, false);
 })
 app.use('/', express.static(__dirname + '/client'));
-app.get('/gifs/*', streamgif);
-
+// app.get('/gifs/*', streamgif);
+app.get('/gifs/*', function(req, res) {
+    var gifid = req.url.replace('/gifs/', '').replace('.gif', '');
+    gifs.GetGifURL(gifid, function(fileurl){
+        res.redirect(301, fileurl)
+    });
+})
 
 // app.use('/', express.static(path.resolve(__dirname, 'client')));
 // app.use('cache', express.static('gifs'))
