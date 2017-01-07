@@ -33,10 +33,10 @@ function AddCache(value) {
 
 function listFiles(auth, callback) {
     var cache = GetCache();
-    // if (cache) {
-    //     callback(cache);
-    //     return;
-    // }
+    if (cache) {
+        callback(cache);
+        return;
+    }
     var service = google.drive('v3');
     service.files.list({
         auth: auth,
