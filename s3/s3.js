@@ -10,10 +10,10 @@ process.env['AWS_ACCESS_KEY_ID'] = AWS_ACCESS_KEY_ID;
 process.env['AWS_SECRET_ACCESS_KEY'] = AWS_SECRET_ACCESS_KEY;
 
 module.exports.fileUploaded = function (key, callback) {
-    var KEY = key + '.gif';
+    var KEY = key;
     var params = { Bucket: S3_BUCKET, Key: KEY };
-    s3.headObject(params, function (err, data) {
-        if (err && err.code == 'NotFound') {
+    s3.headObject(params, function (err, data) { //4332406
+        if (err && err.code == 'NotFound' || data.ContentLength < 1000) {
             callback(false);
         }
         else {
@@ -23,18 +23,18 @@ module.exports.fileUploaded = function (key, callback) {
 }
 
 module.exports.getURL = function(key){
-    var KEY = key + '.gif';
+    var KEY = key;
     var params = { Bucket: S3_BUCKET, Key: KEY };
     var url = URL.parse(s3.getSignedUrl('getObject', params));
     url.search = null;
     return URL.format(url);
 }
 
-module.exports.uploadFromStream = function (key, callback) {
-    var KEY = key + '.gif';
+module.exports.uploadFromStream = function (key, type, callback) {
+    var KEY = key;
     var pass = new stream.PassThrough();
 
-    var params = { Bucket: S3_BUCKET, Key: KEY, Body: pass, ContentType: 'image/gif', StorageClass: 'REDUCED_REDUNDANCY', CacheControl: "max-age=31536000" };
+    var params = { Bucket: S3_BUCKET, Key: KEY, Body: pass, ContentType: type, StorageClass: 'REDUCED_REDUNDANCY', CacheControl: "max-age=31536000" };
     s3.upload(params, function (err, data) {
         callback(err, data);
     });

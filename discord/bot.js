@@ -61,6 +61,21 @@ function HandleBotCommand(payload) {
             message: "It's DJ's fault. Don't listen to that liar Toonki!"
         });
     }
+    else if (payload.moduleName == "image") {
+        findfile(payload.command, function(file) {
+            if (!file){
+                bot.sendMessage({
+                    to: payload.channelID,
+                    message: "Sorry " + payload.user + " I dunno lol ¯\\_(ツ)_/¯"
+                });
+                return;
+            }
+            bot.sendMessage({
+                to: payload.channelID,
+                message: "Here you go " + payload.user + " I found " + file.name + ": " + file.path
+            });
+        }, true, "image");
+    }
     else if (payload.moduleName == "gif") {
         findfile(payload.command, function(file) {
             if (!file){
@@ -74,6 +89,6 @@ function HandleBotCommand(payload) {
                 to: payload.channelID,
                 message: "Here you go " + payload.user + " I found " + file.name + ": " + file.path
             });
-        });
+        }, true, "gif");
     }
 }

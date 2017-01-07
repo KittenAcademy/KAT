@@ -1,25 +1,39 @@
 'use strict';
-var listfiles = require('./listfiles.js');
+var allgifs = require('./gifs.js');
+var allimages = require('./images.js');
 var download = require('./download.js');
-var gifs = require('../gifs/gifs.js');
+var gifs = require('../files/gifs.js');
+var images = require('../files/images.js');
 
-function matchString(stringToFind, filelist){
+function matchString(stringToFind, filelist) {
     var filtered = new Array();
     var filteredTags = filterXwhereYhasZ(filelist, 'tags', stringToFind);
     var filteredNames = filterXwhereYhasZ(filelist, 'name', stringToFind);
-    
+
     // filtered.concat(filteredNames, filteredTags);
     Array.prototype.push.apply(filtered, filteredNames);
     Array.prototype.push.apply(filtered, filteredTags);
     return filtered;
 }
 
-var FindFile = function(stringsToFind, callback, getone) {
+var findFile = function (stringsToFind, callback, getone, search) {
     if (getone === undefined) getone = true;
-    listfiles(function(filelist) {
+    if (search === undefined) search = "gif";
+    var filelist;
+    switch (search) {
+        case "image": {
+            filelist = allimages;
+            break;
+        }
+        default: {
+            filelist = allgifs;
+            break;
+        }
+    }
+    filelist(function (filelist) {
         var filtered = new Array();
         var stringsToFindsplit = stringsToFind.split(" ");
-        if (stringsToFindsplit.length > 0){
+        if (stringsToFindsplit.length > 0) {
             for (var i = 0; i < stringsToFindsplit.length; i++) {
                 var stringToFind = stringsToFindsplit[i];
                 var arraytouse;
@@ -47,23 +61,22 @@ var FindFile = function(stringsToFind, callback, getone) {
     });
 }
 
-module.exports = FindFile
 
 function removeDuplicates(arr, prop) {
-     var new_arr = [];
-     var lookup  = {};
- 
-     for (var i in arr) {
-         lookup[arr[i][prop]] = arr[i];
-     }
- 
-     for (i in lookup) {
-         new_arr.push(lookup[i]);
-     }
- 
-     return new_arr;
- }
- 
+    var new_arr = [];
+    var lookup = {};
+
+    for (var i in arr) {
+        lookup[arr[i][prop]] = arr[i];
+    }
+
+    for (i in lookup) {
+        new_arr.push(lookup[i]);
+    }
+
+    return new_arr;
+}
+
 
 function filesFound(files, callback, getone) {
     if (!getone) {
@@ -71,21 +84,22 @@ function filesFound(files, callback, getone) {
         return;
     }
     var file = getRandomFile(files);
-    gifs.GetGifURL(file.id, function(fileurl){
-        callback({path: fileurl, name: file.name})
-    });
-    // download(file.id, function(downloadedID) {
-    //     callback({
-    //         path: '/gifs/' + file.id + '.gif',
-    //         name: file.name
-    //     });
-    // });
+    var extention = file.name.split('.').pop();
+    if (extention == 'gif') {
+        gifs.GetGifURL(file.id, function (fileurl) {
+            callback({ path: fileurl, name: file.name })
+        });
+    } else {
+        images.GetImageURL(file.id, extention, function (fileurl) {
+            callback({ path: fileurl, name: file.name })
+        });
+    }
 }
 
 function filterXwhereYhasZ(x, y, z) {
     z = z.toLowerCase();
-    return x.filter(function(xa) {
-        if (xa[y] !== undefined)
+    return x.filter(function (xa) {
+        if (xa[y] !== undefined) {
             if (Array.isArray(xa[y])) {
                 if (xa[y].indexOf(z) > -1) {
                     return xa;
@@ -96,6 +110,7 @@ function filterXwhereYhasZ(x, y, z) {
                     return xa;
                 }
             }
+        }
     });
 }
 
@@ -103,16 +118,25 @@ function getRandomFile(filelist) {
     return filelist[Math.floor(Math.random() * (filelist.length))];
 }
 
+module.exports = findFile;
 
-// FindFile('harv tetetetete', function(data){
-//     console.log("data",'harv tetetetete', data);
-// })
-// FindFile('harv goofy', function(data){
-//     console.log("data",'harv goofy', data);
-// })
-// FindFile('harv pounce', function(data){
-//     console.log("data",'harv pounce', data);
-// })
-// FindFile('harv', function(data){
-//     console.log("data",'harv', data);
-// })
+filesFound([{name: 'testgif.gif', id:'0BwoBPbVKwbI9QlRYVmRsbVhscGs'}], function(data){
+    console.log(data);
+}, true)
+
+// findFile('ivy', function(data){
+//     console.log('ivy', 'image', data);
+// }, true, 'image');
+// findFile('ivy', function(data){
+//     console.log('ivy', 'gif', data);
+// }, true, 'gif');
+// findFile('harv', function(data){
+//     console.log('harv', 'image', data);
+// }, true, 'image');
+// findFile('harv', function(data){
+//     console.log('harv', 'gif', data);
+// }, true, 'gif');
+// findFile('league_faculty_harvey_custard_custaru_hug_attack', function(data){
+//     console.log('league_faculty_harvey_custard_custaru_hug_attack', 'gif', data);
+// }, true, 'gif');
+

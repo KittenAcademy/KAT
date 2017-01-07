@@ -12,7 +12,7 @@ var randomgif = require('./drive/randomgif.js');
 var findfile = require('./drive/findfile.js');
 // var streamgif = require('./drive/stream.js');
 
-var gifs = require('./gifs/gifs.js');
+var gifs = require('./files/gifs.js');
 
 var app = express();
 var server = http.createServer(app);

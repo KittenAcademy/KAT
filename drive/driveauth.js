@@ -74,7 +74,7 @@ function GetCache(){
     if (Cache.expires > new Date().getTime()){
         return Cache.value;
     } else {
-  console.log('no token in cache')
+  // console.log('no token in cache')
         return null;
     }
 }
