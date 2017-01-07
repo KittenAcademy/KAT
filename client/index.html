@@ -79,12 +79,17 @@
         $('#thegif').attr('src', data[0].filePath);
         $('#thegiflink').attr('href', data[0].filePath);
         $('#name').text(data[0].name.replace(/_/g, ' ').replace('.gif', ''));
+        // if (data[0].tags) {
+        //   $('#tags').text(data[0].tags.join('#'));
+        // }
+        var tags = "";
         if (data[0].tags) {
-          $('#tags').text(data[0].tags.join('#'));
+          for (var i = 0; i < data[0].tags.length; i++) {
+            if (data[0].tags[i])
+              tags = tags + '<li><a href="/tags.html?tag=' + data[0].tags[i] + '">' + data[0].tags[i] + '</a></li>';
+          }
         }
-        else {
-          $('#tags').text('');
-        }
+        $('#tags').html(tags);
         $('#thenextgif').attr('src', data[1].filePath);
         $('#thenextnextgif').attr('src', data[2].filePath);
       });
