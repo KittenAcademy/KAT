@@ -93,7 +93,12 @@
       $(document).ready(function() {
 
         $("#addimageshere").owlCarousel({
-          items: 1,
+          
+          items : 1, 
+          itemsDesktop : false,
+          itemsDesktopSmall : false,
+          itemsTablet: false,
+          itemsMobile : false,
           lazyLoad: true,
           navigation: true
         });
