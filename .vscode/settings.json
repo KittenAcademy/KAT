@@ -6,5 +6,7 @@
         "**/.hg": true,
         "**/.DS_Store": true,
         "**/node_modules": true
-    }
+    },
+    "editor.insertSpaces": false,
+    "editor.detectIndentation": false
 }
