@@ -1,8 +1,8 @@
-var google = require("googleapis");
-var fs = require("fs");
-var auth = require("./driveauth.js");
+let google = require("googleapis");
+let fs = require("fs");
+let auth = require("./driveauth.js");
 
-var dir = "./cache";
+let dir = "./cache";
 
 if (!fs.existsSync(dir)) {
 	fs.mkdirSync(dir);
@@ -17,7 +17,7 @@ module.exports = function (fileId, callback) {
 };
 
 function download(fileId, auth, callback) {
-	var drive = google.drive({
+	let drive = google.drive({
 		version: "v3",
 		auth: auth
 	});

@@ -11,11 +11,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-var google = require("googleapis");
-var fs = require("fs");
-var auth = require("./driveauth.js");
+let google = require("googleapis");
+let fs = require("fs");
+let auth = require("./driveauth.js");
 
-var dir = "./cache";
+let dir = "./cache";
 
 if (!fs.existsSync(dir)) {
 	fs.mkdirSync(dir);
@@ -30,7 +30,7 @@ module.exports = function (req, res) {
 };
 
 function download(fileId, auth, res) {
-	var drive = google.drive({
+	let drive = google.drive({
 		version: "v3",
 		auth: auth
 	});

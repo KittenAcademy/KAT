@@ -1,13 +1,13 @@
 "use strict";
-var allgifs = require("./gifs.js");
-var allimages = require("./images.js");
-var gifs = require("../files/gifs.js");
-var images = require("../files/images.js");
+let allgifs = require("./gifs.js");
+let allimages = require("./images.js");
+let gifs = require("../files/gifs.js");
+let images = require("../files/images.js");
 
 function matchString(stringToFind, filelist) {
-	var filtered = new Array();
-	var filteredTags = filterXwhereYhasZ(filelist, "tags", stringToFind);
-	var filteredNames = filterXwhereYhasZ(filelist, "name", stringToFind);
+	let filtered = new Array();
+	let filteredTags = filterXwhereYhasZ(filelist, "tags", stringToFind);
+	let filteredNames = filterXwhereYhasZ(filelist, "name", stringToFind);
 
 	// filtered.concat(filteredNames, filteredTags);
 	Array.prototype.push.apply(filtered, filteredNames);
@@ -15,10 +15,10 @@ function matchString(stringToFind, filelist) {
 	return filtered;
 }
 
-var findFile = function (stringsToFind, callback, getone, search) {
+let findFile = function (stringsToFind, callback, getone, search) {
 	if (getone === undefined) getone = true;
 	if (search === undefined) search = "gif";
-	var filelist;
+	let filelist;
 	switch (search) {
 	case "image": {
 		filelist = allimages;
@@ -30,18 +30,18 @@ var findFile = function (stringsToFind, callback, getone, search) {
 	}
 	}
 	filelist(function (filelist) {
-		var filtered = new Array();
-		var stringsToFindsplit = stringsToFind.split(" ");
+		let filtered = new Array();
+		let stringsToFindsplit = stringsToFind.split(" ");
 		if (stringsToFindsplit.length > 0) {
-			for (var i = 0; i < stringsToFindsplit.length; i++) {
-				var stringToFind = stringsToFindsplit[i];
-				var arraytouse;
+			for (let i = 0; i < stringsToFindsplit.length; i++) {
+				let stringToFind = stringsToFindsplit[i];
+				let arraytouse;
 				if (filtered.length == 0) {
 					arraytouse = filelist;
 				} else {
 					arraytouse = filtered;
 				}
-				var itemsFound = matchString(stringToFind, arraytouse);
+				let itemsFound = matchString(stringToFind, arraytouse);
 				if (itemsFound.length > 0) {
 					filtered = new Array();
 				}
@@ -61,14 +61,14 @@ var findFile = function (stringsToFind, callback, getone, search) {
 };
 
 function removeDuplicates(arr, prop) {
-	var new_arr = [];
-	var lookup = {};
+	let new_arr = [];
+	let lookup = {};
 
-	for (var i in arr) {
+	for (let i in arr) {
 		lookup[arr[i][prop]] = arr[i];
 	}
 
-	for (i in lookup) {
+	for (let i in lookup) {
 		new_arr.push(lookup[i]);
 	}
 
@@ -81,8 +81,8 @@ function filesFound(files, callback, getone) {
 		callback(files);
 		return;
 	}
-	var file = getRandomFile(files);
-	var extention = file.name.split(".").pop();
+	let file = getRandomFile(files);
+	let extention = file.name.split(".").pop();
 	if (extention == "gif") {
 		gifs.GetGifURL(file.id, function (fileurl) {
 			callback({ path: fileurl, name: file.name });

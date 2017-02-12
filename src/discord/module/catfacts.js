@@ -1,16 +1,16 @@
-var CatFactWords = require("./catfactswordswords.js");
-var moment = require("moment");
-var catFactWait = 15; //mins between catfact
-var lastCatfact = moment([2016, 1, 1]);
+let CatFactWords = require("./catfactswordswords.js");
+let moment = require("moment");
+let catFactWait = 15; //mins between catfact
+let lastCatfact = moment([2016, 1, 1]);
 
 module.exports = function (payload, callback) {
 	callback(getRandomFact());
 };
 
 function IsLastCatFactTooRecent() {
-	var a = moment();
-	var b = moment(lastCatfact);
-	var minsBetweenCatfacts = a.diff(b, "minutes");
+	let a = moment();
+	let b = moment(lastCatfact);
+	let minsBetweenCatfacts = a.diff(b, "minutes");
 	if (minsBetweenCatfacts < catFactWait) return true;
 	return false;
 }

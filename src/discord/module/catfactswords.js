@@ -128,4 +128,4 @@ module.exports = [
 	"According to the Guinness World Records, the largest domestic cat litter totaled at 19 kittens, four of them stillborn",
 	"Cats' rough tongues enable them to clean themselves efficiently and to lick clean an animal bone",
 	"Most cat litters contain four to six kittens"
-]
+];

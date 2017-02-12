@@ -1,29 +1,29 @@
 // HELP: https://www.npmjs.com/package/mongoose
 
-var mongoose = require("mongoose");
-var setting = require("./settings.js");
-var dbuser = setting("dbuser");
-var dbpass = setting("dbpass");
-var dbinstance = setting("dbinstance");
+let mongoose = require("mongoose");
+let setting = require("./settings.js");
+let dbuser = setting("dbuser");
+let dbpass = setting("dbpass");
+let dbinstance = setting("dbinstance");
 
 if (!dbpass || !dbuser || !dbinstance) {
 	throw ("DB SETTINGS NOT CONFIGURED");
 }
 
-var connectString = `mongodb://${dbuser}:${dbpass}@ds0${dbinstance}.mlab.com:${dbinstance}/kat`;
+let connectString = `mongodb://${dbuser}:${dbpass}@ds0${dbinstance}.mlab.com:${dbinstance}/kat`;
 mongoose.connect(connectString);
 
-var cacheSchemea = mongoose.Schema({
+let cacheSchemea = mongoose.Schema({
 	dateAdded: Date,
 	key: String,
 	value: mongoose.Schema.Types.Mixed
 });
 
-var GifCache = mongoose.model("gifcache", cacheSchemea);
+let GifCache = mongoose.model("gifcache", cacheSchemea);
 
 //allowed, blocked, notfound
 module.exports.GetCache = function(key, callback) {
-	var query = GifCache.where({
+	let query = GifCache.where({
 		key: key
 	});
 	query.findOne(function(err, found) {
@@ -43,7 +43,7 @@ module.exports.GetCache = function(key, callback) {
 };
 
 module.exports.SetCache = function(key, value, callback) {
-	var gifCache = new GifCache();
+	let gifCache = new GifCache();
 	gifCache.key = key;
 	gifCache.value = value;
 	gifCache.dateAdded = new Date();

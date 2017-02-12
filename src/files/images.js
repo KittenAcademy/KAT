@@ -1,13 +1,13 @@
-var s3 = require("../s3/s3.js");
-var drivestream = require("../drive/returnstream.js");
+let s3 = require("../s3/s3.js");
+let drivestream = require("../drive/returnstream.js");
 
 module.exports.GetImageURL = function (imageid, extension, callback) {
-	var filename = imageid + "." + extension;
+	let filename = imageid + "." + extension;
 	s3.fileUploaded(filename, function (isUploaded) {
 		if (isUploaded) {
 			callback(s3.getURL(filename));
 		} else {
-			var metatag;
+			let metatag;
 			switch (extension) {
 			case "png":
 				metatag = "image/png";

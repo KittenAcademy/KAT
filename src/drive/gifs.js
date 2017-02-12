@@ -1,5 +1,5 @@
-var auth = require("./driveauth.js");
-var helpers = require("./helpers");
+let auth = require("./driveauth.js");
+let helpers = require("./helpers");
 /**
  * Lists the names and IDs of up to 10 files.
  *
@@ -9,7 +9,7 @@ var helpers = require("./helpers");
 
 
 module.exports = function (callback) {
-	var cache = GetCache();
+	let cache = GetCache();
 	if (cache) {
 		callback(cache);
 		return;
@@ -24,7 +24,7 @@ module.exports = function (callback) {
 	});
 };
 
-var Cache = new Object();
+let Cache = new Object();
 
 function GetCache() {
 	if (Cache.expires > new Date().getTime()) {

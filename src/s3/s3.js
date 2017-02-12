@@ -1,19 +1,19 @@
-var AWS = require("aws-sdk");
-var setting = require("../settings.js");
-var s3 = new AWS.S3({
+let AWS = require("aws-sdk");
+let setting = require("../settings.js");
+let s3 = new AWS.S3({
 	apiVersion: "2006-03-01", 
 	credentials: new AWS.Credentials(
 		setting("AWS_ACCESS_KEY_ID"), 
 		setting("AWS_SECRET_ACCESS_KEY")
 	)
 });
-var stream = require("stream");
-var URL = require("url");
-var S3_BUCKET = setting("S3_BUCKET");
+let stream = require("stream");
+let URL = require("url");
+let S3_BUCKET = setting("S3_BUCKET");
 
 module.exports.fileUploaded = function (key, callback) {
-	var KEY = key;
-	var params = { Bucket: S3_BUCKET, Key: KEY };
+	let KEY = key;
+	let params = { Bucket: S3_BUCKET, Key: KEY };
 	s3.headObject(params, function (err, data) { //4332406
 		if (err){
 			switch (err.code) {
@@ -35,18 +35,18 @@ module.exports.fileUploaded = function (key, callback) {
 };
 
 module.exports.getURL = function(key){
-	var KEY = key;
-	var params = { Bucket: S3_BUCKET, Key: KEY };
-	var url = URL.parse(s3.getSignedUrl("getObject", params));
+	let KEY = key;
+	let params = { Bucket: S3_BUCKET, Key: KEY };
+	let url = URL.parse(s3.getSignedUrl("getObject", params));
 	url.search = null;
 	return URL.format(url);
 };
 
 module.exports.uploadFromStream = function (key, type, callback) {
-	var KEY = key;
-	var pass = new stream.PassThrough();
+	let KEY = key;
+	let pass = new stream.PassThrough();
 
-	var params = { Bucket: S3_BUCKET, Key: KEY, Body: pass, ContentType: type, StorageClass: "REDUCED_REDUNDANCY", CacheControl: "max-age=31536000" };
+	let params = { Bucket: S3_BUCKET, Key: KEY, Body: pass, ContentType: type, StorageClass: "REDUCED_REDUNDANCY", CacheControl: "max-age=31536000" };
 	s3.upload(params, function (err, data) {
 		callback(err, data);
 	});

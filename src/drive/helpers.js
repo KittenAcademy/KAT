@@ -1,6 +1,6 @@
-var google = require("googleapis");
+let google = require("googleapis");
 module.exports.listFiles = function(query, auth, callback) {
-	var service = google.drive("v3");
+	let service = google.drive("v3");
 	//https://developers.google.com/drive/v3/reference/files/list
 	service.files.list({
 		auth: auth,
@@ -13,13 +13,13 @@ module.exports.listFiles = function(query, auth, callback) {
 			console.log("The API returned an error: " + err);
 			return;
 		}
-		var files = response.files;
+		let files = response.files;
 		if (files.length == 0) {
 			console.log("No files found.");
 		}
 		else {
-			for (var i = 0; i < files.length; i++) {
-				var file = files[i];
+			for (let i = 0; i < files.length; i++) {
+				let file = files[i];
 				file.name = file.name.toLowerCase();
 				if (!file.description) continue;
 				//file.tags = file.description.ToLower().split("#");
@@ -28,8 +28,8 @@ module.exports.listFiles = function(query, auth, callback) {
 				});
 			}
 			//   console.log("Files:");
-			//   for (var i = 0; i < files.length; i++) {
-			//	 var file = files[i];
+			//   for (let i = 0; i < files.length; i++) {
+			//	 let file = files[i];
 			//	 console.log("%s (%s)", file.name, file.id);
 			//   }
 			callback(files);

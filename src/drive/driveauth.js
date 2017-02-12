@@ -1,27 +1,27 @@
 //https://console.developers.google.com/apis/credentials/consent?project=beaming-team-148423
-var googleAuth = require("google-auth-library");
-var database = require("../database.js");
-var setting = require("../settings.js");
+let googleAuth = require("google-auth-library");
+let database = require("../database.js");
+let setting = require("../settings.js");
 
 // If modifying these scopes, delete your previously saved credentials
 // at ~/.credentials/drive-nodejs-quickstart.json
 
 //TODO: this needs to work through a web page as the console will not be available for input when hosted
 
-// var SCOPES = [
+// let SCOPES = [
 // 	"https://www.googleapis.com/auth/drive.metadata.readonly",
 // 	"https://www.googleapis.com/auth/drive.photos.readonly",
 // 	"https://www.googleapis.com/auth/drive.readonly"
 // ];
 
 
-// var TOKEN_DIR = "./cache";
-// var TOKEN_PATH =  path.join(__dirname, "..", "cache", "drivetoken.json"); //TOKEN_DIR + "drivetoken.json";
+// let TOKEN_DIR = "./cache";
+// let TOKEN_PATH =  path.join(__dirname, "..", "cache", "drivetoken.json"); //TOKEN_DIR + "drivetoken.json";
 
 //TODO: Cache the auth token
 
 module.exports = function (callback) {
-	var cache = GetCache();
+	let cache = GetCache();
 	if (cache) {
 		callback(cache);
 		return;
@@ -45,11 +45,11 @@ function BeginAuth(callback) {
  * @param {function} callback The callback to call with the authorized client.
  */
 function authorize(credentials, callback) {
-	var clientSecret = credentials.installed.client_secret;
-	var clientId = credentials.installed.client_id;
-	var redirectUrl = credentials.installed.redirect_uris[0];
-	var auth = new googleAuth();
-	var oauth2Client = new auth.OAuth2(clientId, clientSecret, redirectUrl);
+	let clientSecret = credentials.installed.client_secret;
+	let clientId = credentials.installed.client_id;
+	let redirectUrl = credentials.installed.redirect_uris[0];
+	let auth = new googleAuth();
+	let oauth2Client = new auth.OAuth2(clientId, clientSecret, redirectUrl);
 
 	// Check if we have previously stored a token.
 	database.GetCache("drivetoken", function (err, token) {
@@ -64,7 +64,7 @@ function authorize(credentials, callback) {
 }
 
 
-var Cache = new Object();
+let Cache = new Object();
 
 function GetCache() {
 	if (Cache.expires > new Date().getTime()) {

@@ -1,13 +1,13 @@
-var Discord = require("discord.io");
-var setting = require("../settings.js");
-var findfile = require("../drive/findfile.js");
+let Discord = require("discord.io");
+let setting = require("../settings.js");
+let findfile = require("../drive/findfile.js");
 
-var bot = new Discord.Client({
+let bot = new Discord.Client({
 	token: setting("DiscordToken"),
 	autorun: true
 });
 
-var avatar = require("./avatar.js");
+let avatar = require("./avatar.js");
 
 bot.on("ready", function () {
 	console.log(bot.username + " - (" + bot.id + ")", "ready");
@@ -27,8 +27,8 @@ bot.on("message", function (user, userID, channelID, message, event) {
 		if (message[0] != "!") {
 			return;
 		}
-		var moduleName = message.split(" ")[0];
-		var payload = {
+		let moduleName = message.split(" ")[0];
+		let payload = {
 			user: user,
 			userID: userID,
 			channelID: channelID,
