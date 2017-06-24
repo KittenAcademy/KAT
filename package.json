@@ -21,10 +21,10 @@
     "nodemon": "^1.11.0"
   },
   "scripts": {
-    "start": "npm run lint:watch & node ./app.js",
+    "start": "node ./app.js",
     "lint": "esw app.js src client --color",
     "lint:watch": "npm run lint -- --watch",
-    "test": "mocha --recursive",
+    "test": "npm run lint:watch & node ./app.js",
     "monitor": "nodemon ./bin/www"
   },
   "cacheDirectories": [

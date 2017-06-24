@@ -1,6 +1,7 @@
 let Discord = require("discord.io");
 let setting = require("../settings.js");
 let findfile = require("../drive/findfile.js");
+let getlatest = require("../drive/getlatest.js");
 
 let bot = new Discord.Client({
 	token: setting("DiscordToken"),
@@ -55,6 +56,20 @@ bot.on("disconnect", function (erMsg, code) {
 });
 
 function HandleBotCommand(payload) {
+	if (payload.moduleName == "allgifs") {
+		bot.sendMessage({
+			to: payload.channelID,
+			message: "Here you go " + payload.user + " these are all my gifs for " + payload.command + " http://kitten.ga/tags.html?tag=" +payload.command
+		});
+	}
+	if (payload.moduleName == "latestgif") {
+		getlatest(function (file) {
+			bot.sendMessage({
+				to: payload.channelID,
+				message: "Here you go " + payload.user + " this is the most recent gif " + file.name + ": " + file.path
+			});
+		});
+	}
 	if (payload.moduleName == "whosefault") {
 		bot.sendMessage({
 			to: payload.channelID,
