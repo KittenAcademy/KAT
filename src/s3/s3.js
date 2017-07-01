@@ -34,6 +34,25 @@ module.exports.fileUploaded = function (key, callback) {
 	});
 };
 
+module.exports.deleteFile = function(key, callback){
+	let KEY = key;
+	let params = { Bucket: S3_BUCKET, Key: KEY };
+	s3.deleteObject(params, function (err, data){
+		if (err){
+			switch (err.code) {
+			case "NotFound":
+				callback(false);
+				return;
+			default:
+				throw (err);
+			}
+		}
+		else {
+			callback(true);
+		}
+	});
+};
+
 module.exports.getURL = function(key){
 	let KEY = key;
 	let params = { Bucket: S3_BUCKET, Key: KEY };

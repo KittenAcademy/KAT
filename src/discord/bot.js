@@ -2,6 +2,7 @@ let Discord = require("discord.io");
 let setting = require("../settings.js");
 let findfile = require("../drive/findfile.js");
 let getlatest = require("../drive/getlatest.js");
+const gifs = require("../files/gifs.js");
 
 let bot = new Discord.Client({
 	token: setting("DiscordToken"),
@@ -62,7 +63,7 @@ function HandleBotCommand(payload) {
 			message: "Here you go " + payload.user + " these are all my gifs for " + payload.command + " http://kitten.ga/tags.html?tag=" +payload.command
 		});
 	}
-	if (payload.moduleName == "latestgif") {
+	else if (payload.moduleName == "latestgif") {
 		getlatest(function (file) {
 			bot.sendMessage({
 				to: payload.channelID,
@@ -70,7 +71,15 @@ function HandleBotCommand(payload) {
 			});
 		});
 	}
-	if (payload.moduleName == "whosefault") {
+	else if (payload.moduleName == "fixgif") {
+		gifs.FixGif(payload.command, function (file) {
+			bot.sendMessage({
+				to: payload.channelID,
+				message: "Fixed " + file
+			});
+		});
+	}
+	else if (payload.moduleName == "whosefault") {
 		bot.sendMessage({
 			to: payload.channelID,
 			message: "It's DJ's fault. Don't listen to that liar Toonki!"

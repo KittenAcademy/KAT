@@ -8,7 +8,6 @@ let driveauth = require("./src/drive/auth.js");
 let express = require("express");
 let randomgif = require("./src/drive/randomgif.js");
 let findfile = require("./src/drive/findfile.js");
-// let streamgif = require("./drive/stream.js");
 require("./src/discord/bot.js");
 
 let gifs = require("./src/files/gifs.js");
@@ -40,7 +39,6 @@ app.get("/tags", function(req, res) {
 	}, false);
 });
 app.use("/", express.static(__dirname + "/client"));
-// app.get("/gifs/*", streamgif);
 app.get("/gifs/*", function(req, res) {
 	let gifid = req.url.replace("/gifs/", "").replace(".gif", "");
 	gifs.GetGifURL(gifid, function(fileurl){
