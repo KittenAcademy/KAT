@@ -2,6 +2,8 @@ let Discord = require("discord.io");
 let setting = require("../settings.js");
 let findfile = require("../drive/findfile.js");
 let getlatest = require("../drive/getlatest.js");
+let catfacts = require("./module/catfacts.js");
+let jokes = require("./module/jokes.js");
 const gifs = require("../files/gifs.js");
 
 let bot = new Discord.Client({
@@ -61,6 +63,20 @@ function HandleBotCommand(payload) {
 		bot.sendMessage({
 			to: payload.channelID,
 			message: "Here you go " + payload.user + " these are all my gifs for " + payload.command + " http://kitten.ga/tags.html?tag=" +payload.command
+		});
+	}
+	else if (payload.moduleName == "joke") {
+		var message = jokes();
+		bot.sendMessage({
+			to: payload.channelID,
+			message:message
+		});
+	}
+	else if (payload.moduleName == "catfact") {
+		var message = catfacts();
+		bot.sendMessage({
+			to: payload.channelID,
+			message:message
 		});
 	}
 	else if (payload.moduleName == "latestgif") {

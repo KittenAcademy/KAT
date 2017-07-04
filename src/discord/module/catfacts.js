@@ -1,10 +1,10 @@
-let CatFactWords = require("./catfactswordswords.js");
+let CatFactWords = require("./catfactswords.js");
 let moment = require("moment");
-let catFactWait = 15; //mins between catfact
+let catFactWait = 1; //mins between catfact
 let lastCatfact = moment([2016, 1, 1]);
 
 module.exports = function (payload, callback) {
-	callback(getRandomFact());
+	return getRandomFact();
 };
 
 function IsLastCatFactTooRecent() {
@@ -17,7 +17,8 @@ function IsLastCatFactTooRecent() {
 
 function getRandomFact() {
 	if (IsLastCatFactTooRecent()) {
-		return ({ messageToSend: "Please wait before getting another CatFact", dm: true });
+		return "Please wait before getting another CatFact";
+		// return ({ messageToSend: "Please wait before getting another CatFact", dm: true });
 	}
 	lastCatfact = moment();
 	return CatFactWords[Math.floor(Math.random() * CatFactWords.length)];
