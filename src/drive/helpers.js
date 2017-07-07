@@ -1,6 +1,10 @@
 let google = require("googleapis");
 module.exports.listFiles = function (query, auth, callback) {
 	fetchPage(null, fetchPage, auth, query, [], function(error, files){
+		if (error) {
+			console.log(error);
+			callback(null);
+		}
 		for (let i = 0; i < files.length; i++) {
 			let file = files[i];
 			file.name = file.name.toLowerCase();
