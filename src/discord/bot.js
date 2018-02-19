@@ -13,8 +13,16 @@ let avatar = require("./avatar.js");
 
 bot.on("ready", function () {
 	console.log(bot.username + " - (" + bot.id + ")", "ready");
+	// console.log(bot.channels.get("name", "bottest"));
+
+	// bot.channels.get("328194320601710593").send(":eyes:")
 	// bot.user.setAvatar(avatar);
+	// bot.channels.find(x => x.name === "bottest").send("Beware I live")
 });
+
+module.exports.SendMessage = (room, message) => {
+	bot.channels.find(x => x.name === room).send(message)
+}
 bot.on("message", function (event) {
 	try {
 		if (event.author.bot) {

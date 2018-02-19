@@ -8,7 +8,7 @@ let driveauth = require("./src/drive/auth.js");
 let express = require("express");
 let randomgif = require("./src/drive/randomgif.js");
 let findfile = require("./src/drive/findfile.js");
-require("./src/discord/bot.js");
+let discord = require("./src/discord/bot.js");
 
 let gifs = require("./src/files/gifs.js");
 
@@ -24,6 +24,9 @@ app.get("/AuthUseCode", function(req, res) {
 	driveauth.UseCode(req.query.code, function(response) {
 		res.json(response);
 	});
+});
+app.get("/SendBotMessage", function(req, res) {
+	discord.SendMessage(req.query.room, req.query.message);
 });
 app.get("/getgifids", function(req, res) {
 	res.json(randomgif());

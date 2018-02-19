@@ -7,7 +7,7 @@
   "author": "Mark Dell <madelk@gmail.com>",
   "dependencies": {
     "aws-sdk": "^2.7.19",
-    "discord.js": "^11.2.1",
+    "discord.js": "^11.3.0",
     "express": "^4.14.0",
     "google-auth-library": "^0.9.9",
     "googleapis": "^14.1.0",
