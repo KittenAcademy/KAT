@@ -37,7 +37,7 @@ function GetCache() {
 
 function AddCache(value) {
 	Cache.value = value;
-	Cache.expires = new Date().addMinutes(10).getTime();
+	Cache.expires = new Date().addMinutes(9999).getTime();
 }
 
 Date.prototype.addMinutes = function (m) {

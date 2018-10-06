@@ -3,3 +3,5 @@ Authorize the app onto discord with:
 
 Files are pulled from [drive](https://drive.google.com/drive/folders/0BwoBPbVKwbI9TUdFSG0yRjh5UTQ) and uploaded to [S3](http://console.aws.amazon.com/s3/buckets/kittenacademy): 
 make sure you have a privatesettings.js or that you store settings in your local environment
+
+Watch the API limits https://console.developers.google.com/apis/api/drive.googleapis.com/quotas?project=beaming-team-148423&duration=PT1H
