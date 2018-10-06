@@ -17,8 +17,10 @@ module.exports.listFiles = function (query, auth, callback) {
 	});
 };
 
+let page = 0;
 const fetchPage = function (pageToken, pageFn, auth, query, files, callback) {
 	let drive = google.drive("v3");
+	console.log(`getting page ${page} from Google`, query)
 	drive.files.list({
 		auth: auth,
 		q: query,
@@ -27,12 +29,19 @@ const fetchPage = function (pageToken, pageFn, auth, query, files, callback) {
 		pageToken: pageToken
 	}, function (err, res) {
 		if (err) {
-			callback(err);
+			console.log('error when trying to get page from google');
+			console.log(err);
+			console.log('Retrying in two seconds');
+			setTimeout(function(){
+				pageFn(pageToken, pageFn, auth, query, files, callback);
+			}, 2000);
 		} else {
 			files.push.apply(files, res.files);
 			if (res.nextPageToken) {
+				page = page + 1;
 				pageFn(res.nextPageToken, pageFn, auth, query, files, callback);
 			} else {
+				page = 0;
 				callback(null, files);
 			}
 		}

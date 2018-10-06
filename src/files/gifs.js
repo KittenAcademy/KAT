@@ -1,14 +1,15 @@
 let s3 = require("../s3/s3.js");
+let cloudFront = require("../cloudFront/cloudFront.js");
 
 module.exports.GetGifURL = function (gifid, callback) {
 	let filename = gifid + ".gif";
 	s3.fileUploaded(filename, function (isUploaded) {
 		if (isUploaded) {
-			callback(s3.getURL(filename));
+			callback(cloudFront.getURL(filename));
 		} else {
 			new (require("../drive/returnstream.js"))(gifid, function (inputStream) {
 				inputStream.pipe(s3.uploadFromStream(filename, "image/gif", function () { // err, data
-					callback(s3.getURL(filename));
+					callback(cloudFront.getURL(filename));
 				}));
 			});
 		}
