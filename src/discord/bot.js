@@ -62,7 +62,7 @@ bot.on("disconnect", function (erMsg, code, something) {
 
 function HandleBotCommand(payload, channel) {
 	if (payload.moduleName == "allgifs") {
-		channel.send("Here you go " + payload.user + " these are all my gifs for " + payload.command + " http://kitten.ga/tags.html?tag=" +payload.command);
+		channel.send("Here you go " + payload.user + " these are all my gifs for " + payload.command + " http://gifs.kitten.academy/tags.html?tag=" +payload.command);
 	}
 	else if (payload.moduleName == "livestreams") {
 		let url = "https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=UC83RKJs4eKHVE9v0YUyqzgg&eventType=live&maxResults=10&order=viewCount&type=video&key="+ setting("GooleAPIKey")
