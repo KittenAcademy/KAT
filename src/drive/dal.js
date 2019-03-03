@@ -67,7 +67,7 @@ const fetchPage = async (pageToken, query) => {
 		query.fields = "nextPageToken, files(id, name)";
 		query.spaces = "drive";
 		query.pageToken = pageToken;
-		console.log("getting ", query.q + " from Google drive")
+		console.log("getting ", query, " from Google drive")
 		drive.files.list(query).then(res => {
 			resolve(res.data);
 		}).catch(err => {
