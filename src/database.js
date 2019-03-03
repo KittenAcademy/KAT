@@ -13,13 +13,109 @@ if (!dbpass || !dbuser || !dbinstance) {
 let connectString = `mongodb://${dbuser}:${dbpass}@ds0${dbinstance}.mlab.com:${dbinstance}/kat`;
 mongoose.connect(connectString);
 
-let cacheSchemea = new mongoose.Schema({
-	dateAdded: Date,
-	key: String,
-	value: mongoose.Schema.Types.Mixed
-});
+const GifsModel = mongoose.model(
+	"gifs",
+	new mongoose.Schema({
+		id: String,
+		name: String,
+		tags: [String]
+	})
+);
+const GifCacheModel = mongoose.model(
+	"gifcache",
+	new mongoose.Schema({
+		dateAdded: Date,
+		key: String,
+		value: mongoose.Schema.Types.Mixed
+	})
+);
 
-let GifCache = mongoose.model("gifcache", cacheSchemea);
+module.exports.SearchForGif = name => {
+	return new Promise((resolve, reject) => {
+		return GifsModel.aggregate([
+			{ "$match": { "name": new RegExp(name, "i") } },
+			{ $sample: { size: 1 } }
+		]).exec((err, result) => {
+			if (err) {
+				reject(err);
+			} else {
+				const file = result[0]
+				if (!file) {
+					reject("Not Found");
+				} else {
+					resolve({
+						name: file.name,
+						id: file.id
+					})
+				}
+			}
+		});
+	})
+};
+
+module.exports.RandomGif = () => {
+	return new Promise((resolve, reject) => {
+		GifsModel.aggregate([
+			{ $sample: { size: 1 } }
+		]).exec((err, result) => {
+			if (err) {
+				reject(err);
+			} else {
+				const file = result[0]
+				if (!file) {
+					reject("Not Found");
+				} else {
+					resolve({
+						name: file.name,
+						id: file.id
+					})
+				}
+			}
+		});
+	})
+};
+
+const test = async () => {
+	console.log("Searching For cat", await this.SearchForGif("cat"));
+	console.log("Searching For dance", await this.SearchForGif("dance"));
+	console.log("Searching For cat", await this.SearchForGif("cat"));
+	console.log("RandomGif", await this.RandomGif());
+}
+// test();
+
+module.exports.FindGifByTag = /**
+ * @param { string } tag
+ */
+	async tag => {
+		// @ts-ignore
+		const query = GifsModel.where({
+			tags: tag
+		});
+		return query.find();
+	};
+
+module.exports.FindGif = /**
+ * @param {{ id: string; }} file
+ */
+	async file => {
+		// @ts-ignore
+		const query = GifsModel.where({
+			id: file.id
+		});
+		return query.findOne();
+	};
+
+module.exports.AddGif = /**
+ * @param {{ id: string; name: string; tags: string[] }} file
+ */
+	async file => {
+		let gif = new GifsModel();
+		gif.id = file.id;
+		gif.name = file.name;
+		gif.tags = file.tags;
+		return gif.save();
+	};
+
 
 //allowed, blocked, notfound
 module.exports.GetCache = /**
@@ -28,7 +124,7 @@ module.exports.GetCache = /**
  */
 	function (cacheKey, callback) {
 		// @ts-ignore
-		let query = GifCache.where({
+		let query = GifCacheModel.where({
 			key: cacheKey
 		});
 		query.findOne(function (err, found) {
@@ -48,7 +144,7 @@ module.exports.GetCache = /**
 	};
 
 module.exports.SetCache = function (key, value, callback) {
-	let gifCache = new GifCache();
+	let gifCache = new GifCacheModel();
 	gifCache.key = key;
 	gifCache.value = value;
 	gifCache.dateAdded = new Date();
@@ -67,7 +163,7 @@ module.exports.SetCache = function (key, value, callback) {
 };
 
 module.exports.DeleteCache = function (key, callback) {
-	GifCache.findOneAndRemove({
+	GifCacheModel.findOneAndRemove({
 		key: key
 		// }, function(err, doc, result) {
 	}, function (err) {

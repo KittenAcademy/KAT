@@ -1,7 +1,9 @@
-"use strict";
-let allgifs = require("./gifs.js");
+// "use strict";
+// let allgifs = require("./gifs.js");
 // let allimages = require("./images.js");
-let gifs = require("../files/gifs.js");
+const gifs = require("../files/gifs.js"),
+	cloudFront = require("../cloudFront/cloudFront.js"),
+	databaseDal = require("../database");
 // let images = require("../files/images.js");
 
 /**
@@ -21,56 +23,11 @@ function matchString(stringToFind, filelist) {
 
 /**
  * @param {string} stringsToFind
- * @param {{ (file: { name: string; path: string; }): void; (file: { name: any; path: string; }): void; (filename: any): void; (files: any): void; (arg0: any): void; }} callback
- * @param {boolean} [getone]
- * @param {string} [search]
  */
-module.exports = (stringsToFind, callback, getone, search) => {
-	if (getone === undefined) getone = true;
-	if (search === undefined) search = "gif";
-	let filelist;
-	switch (search) {
-		// case "image": {
-		// 	filelist = allimages;
-		// 	break;
-		// }
-		default: {
-			filelist = allgifs;
-			break;
-		}
-	}
-	filelist(/**
-		 * @param {any} filelist
-		 */
-		function (filelist) {
-			let filtered = new Array();
-			const stringsToFindsplit = stringsToFind.split(" ");
-			if (stringsToFindsplit.length > 0) {
-				for (let i = 0; i < stringsToFindsplit.length; i++) {
-					const stringToFind = stringsToFindsplit[i];
-					let arraytouse;
-					if (filtered.length == 0) {
-						arraytouse = filelist;
-					} else {
-						arraytouse = filtered;
-					}
-					let itemsFound = matchString(stringToFind, arraytouse);
-					if (itemsFound.length > 0) {
-						filtered = new Array();
-					}
-					Array.prototype.push.apply(filtered, itemsFound);
-				}
-			}
-			else {
-				Array.prototype.push.apply(filtered, matchString(stringsToFind, filelist));
-			}
-			// console.log(filtered, stringsToFind)
-			if (filtered.length > 0) {
-				filesFound(removeDuplicates(filtered, "id"), callback, getone);
-				return;
-			}
-			callback(null);
-		});
+module.exports = async (stringsToFind) => {
+	const file = await databaseDal.SearchForGif(stringsToFind);
+	file.path = cloudFront.getURL(file.id) + ".gif";
+	return file;
 };
 
 /**
@@ -104,22 +61,8 @@ function filesFound(files, callback, getone) {
 		return;
 	}
 	let file = getRandomFile(files);
-	let extention = file.name.split(".").pop();
-	if (extention == "gif") {
-		gifs.GetGifURL(file.id, /**
-			 * @param {any} fileurl
-			 */
-			function (fileurl) {
-				callback({ path: fileurl, name: file.name });
-			});
-	// } else {
-	// 	images.GetImageURL(file.id, extention, /**
-	// 		 * @param {any} fileurl
-	// 		 */
-	// 		function (fileurl) {
-	// 			callback({ path: fileurl, name: file.name });
-	// 		});
-	}
+	const fileurl = gifs.GetGifURL(file.id);
+	callback({ path: fileurl, name: file.name });
 }
 
 /**

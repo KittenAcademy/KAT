@@ -2,16 +2,13 @@
 const { OAuth2Client } = require("google-auth-library"),
 	database = require("../database.js"),
 	setting = require("../settings.js");
-/**
- * @param {(arg0: OAuth2Client) => void} callback
- */
-module.exports = async callback => {
+	
+module.exports = async () => {
 	let cache = GetCache();
 	if (cache) {
-		callback(cache);
-		return;
+		return(cache);
 	}
-	callback(await authorize(setting("ClientSecret")));
+	return await authorize(setting("ClientSecret"));
 };
 
 /**
@@ -57,10 +54,4 @@ function GetCache() {
 function AddCache(value) {
 	// console.log("adding token to cache", value)
 	Cache.value = value;
-	Cache.expires = new Date().addHours(1).getTime();
 }
-
-Date.prototype.addHours = function (h) {
-	this.setHours(this.getHours() + h);
-	return this;
-};

@@ -1,6 +1,5 @@
 let { google } = require("googleapis");
 let fs = require("fs");
-let auth = require("./driveauth.js");
 
 let dir = "./cache";
 
@@ -8,30 +7,46 @@ if (!fs.existsSync(dir)) {
 	fs.mkdirSync(dir);
 }
 
-module.exports = function (fileId, callback) {
-	auth(function (auth) {
+// module.exports = function (fileId, auth) {
+// 	let drive = google.drive({
+// 		version: "v3",
+// 		auth: auth
+// 	});
+// 	return drive.files.export({
+// 		fileId: fileId,
+// 		alt: "media"
+// 	});
+// }
 
-		download(fileId, auth, callback);
-		// console.log("download",auth);
-	});
-};
 
-function download(fileId, auth, callback) {
+module.exports = async function (fileId, auth, dest) {
 	let drive = google.drive({
 		version: "v3",
 		auth: auth
 	});
-
-	drive.files.get({
-		fileId: fileId
-	}, function (err) { // also has metadata
-		if (err) {
-			console.error(err);
-			// return process.exit();
-		}
-		callback(drive.files.get({
-			fileId: fileId,
-			alt: "media"
-		}));
+	return new Promise(async (resolve, reject) => {
+	  let progress = 0;
+	  const res = await drive.files.get(
+		{fileId, alt: 'media'},
+		{responseType: 'stream'}
+	  );
+	  res.data
+		.on('end', () => {
+		  console.log('Done downloading file.', fileId);
+		  resolve();
+		})
+		.on('error', err => {
+		  console.error('Error downloading file.', fileId);
+		  reject(err);
+		})
+		.on('data', d => {
+		  progress += d.length;
+		  if (process.stdout.isTTY) {
+			process.stdout.clearLine();
+			process.stdout.cursorTo(0);
+			process.stdout.write(`Downloaded ${progress} bytes`);
+		  }
+		})
+		.pipe(dest);
 	});
-}
+  }
