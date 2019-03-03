@@ -31,6 +31,7 @@ module.exports = async function (fileId, auth, dest) {
 		{responseType: 'stream'}
 	  );
 	  res.data
+		// @ts-ignore
 		.on('end', () => {
 		  console.log('Done downloading file.', fileId);
 		  resolve();
@@ -42,7 +43,9 @@ module.exports = async function (fileId, auth, dest) {
 		.on('data', d => {
 		  progress += d.length;
 		  if (process.stdout.isTTY) {
+			// @ts-ignore
 			process.stdout.clearLine();
+			// @ts-ignore
 			process.stdout.cursorTo(0);
 			process.stdout.write(`Downloaded ${progress} bytes`);
 		  }

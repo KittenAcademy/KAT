@@ -37,7 +37,7 @@ app.get("/getgifids", function(req, res) {
 // 	res.json(filename);
 // });
 app.get("/tags", async (req, res) => {
-	const files = await databaseDal.FindGifByTag(req.query.text)
+	const files = await databaseDal.FindGifsByTag(req.query.text)
 	res.json(files);
 });
 app.use("/", express.static(__dirname + "/client"));

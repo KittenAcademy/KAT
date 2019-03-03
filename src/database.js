@@ -83,7 +83,7 @@ const test = async () => {
 }
 // test();
 
-module.exports.FindGifByTag = /**
+module.exports.FindGifsByTag = /**
  * @param { string } tag
  */
 	async tag => {
@@ -93,6 +93,13 @@ module.exports.FindGifByTag = /**
 		});
 		return query.find();
 	};
+/**
+* @param { string[] } tags
+*/
+module.exports.FindGifByTags = async tags => {
+	// @ts-ignore
+	return GifsModel.findOne({ tags: { $all: tags } });
+};
 
 module.exports.FindGif = /**
  * @param {{ id: string; }} file

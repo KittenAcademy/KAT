@@ -22,10 +22,16 @@ function matchString(stringToFind, filelist) {
 }
 
 /**
- * @param {string} stringsToFind
+ * @param {string} stringToFind
  */
-module.exports = async (stringsToFind) => {
-	const file = await databaseDal.SearchForGif(stringsToFind);
+module.exports = async (stringToFind) => {
+	let file = {};
+	if (stringToFind.indexOf(' ') >= 0) {
+		file = await databaseDal.FindGifByTags(stringToFind.split(" "));
+	} else {
+		file = await databaseDal.SearchForGif(stringToFind);
+	}
+	if (!file) return null;
 	file.path = cloudFront.getURL(file.id) + ".gif";
 	return file;
 };
