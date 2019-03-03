@@ -18,7 +18,7 @@ module.exports.updateNewGifs = /**
 		for (let i = 0; i < recentlyChangedFiles.files.length; i++) {
 			const recentlyChangedFile = recentlyChangedFiles.files[i];
 			if (await databaseDal.FindGif(recentlyChangedFile)) {
-				// aFileWasFound = true; // TODO: Don't leave this commented
+				aFileWasFound = true; // TODO: Don't leave this commented
 				await uploadGif(recentlyChangedFile.id);
 			} else {
 				await uploadGif(recentlyChangedFile.id);
