@@ -78,7 +78,7 @@
   <script>
     $.getJSON("/tags/?text=" + GetQueryStringParams("tag"), function(data) {
       for (var i = 0; i < data.length; i++) {
-        var imageURL = '/gifs/' + data[i].id + '.gif';
+        var imageURL = 'http://d2hjowy56oi5vk.cloudfront.net/' + data[i].id + '.gif';
         var title = (data[i].name.replace(/_/g, ' ').replace('.gif', ''));
         var tags = '<ul class="tags">';
         if (data[i].tags) {
