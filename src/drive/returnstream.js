@@ -1,4 +1,4 @@
-let google = require("googleapis");
+let { google } = require("googleapis");
 let fs = require("fs");
 let auth = require("./driveauth.js");
 
@@ -29,16 +29,9 @@ function download(fileId, auth, callback) {
 			console.error(err);
 			// return process.exit();
 		}
-
-
-
 		callback(drive.files.get({
 			fileId: fileId,
 			alt: "media"
-		})
-			.on("error", function (err) {
-				console.log("Error downloading file", err);
-				// process.exit();
-			}));
+		}));
 	});
 }

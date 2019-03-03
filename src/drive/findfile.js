@@ -1,11 +1,15 @@
 "use strict";
 let allgifs = require("./gifs.js");
-let allimages = require("./images.js");
+// let allimages = require("./images.js");
 let gifs = require("../files/gifs.js");
-let images = require("../files/images.js");
+// let images = require("../files/images.js");
 
+/**
+ * @param {any} stringToFind
+ * @param {any} filelist
+ */
 function matchString(stringToFind, filelist) {
-	let filtered = new Array();
+	const filtered = new Array();
 	let filteredTags = filterXwhereYhasZ(filelist, "tags", stringToFind);
 	let filteredNames = filterXwhereYhasZ(filelist, "name", stringToFind);
 
@@ -15,51 +19,64 @@ function matchString(stringToFind, filelist) {
 	return filtered;
 }
 
-let findFile = function (stringsToFind, callback, getone, search) {
+/**
+ * @param {string} stringsToFind
+ * @param {{ (file: { name: string; path: string; }): void; (file: { name: any; path: string; }): void; (filename: any): void; (files: any): void; (arg0: any): void; }} callback
+ * @param {boolean} [getone]
+ * @param {string} [search]
+ */
+module.exports = (stringsToFind, callback, getone, search) => {
 	if (getone === undefined) getone = true;
 	if (search === undefined) search = "gif";
 	let filelist;
 	switch (search) {
-	case "image": {
-		filelist = allimages;
-		break;
+		// case "image": {
+		// 	filelist = allimages;
+		// 	break;
+		// }
+		default: {
+			filelist = allgifs;
+			break;
+		}
 	}
-	default: {
-		filelist = allgifs;
-		break;
-	}
-	}
-	filelist(function (filelist) {
-		let filtered = new Array();
-		let stringsToFindsplit = stringsToFind.split(" ");
-		if (stringsToFindsplit.length > 0) {
-			for (let i = 0; i < stringsToFindsplit.length; i++) {
-				let stringToFind = stringsToFindsplit[i];
-				let arraytouse;
-				if (filtered.length == 0) {
-					arraytouse = filelist;
-				} else {
-					arraytouse = filtered;
+	filelist(/**
+		 * @param {any} filelist
+		 */
+		function (filelist) {
+			let filtered = new Array();
+			const stringsToFindsplit = stringsToFind.split(" ");
+			if (stringsToFindsplit.length > 0) {
+				for (let i = 0; i < stringsToFindsplit.length; i++) {
+					const stringToFind = stringsToFindsplit[i];
+					let arraytouse;
+					if (filtered.length == 0) {
+						arraytouse = filelist;
+					} else {
+						arraytouse = filtered;
+					}
+					let itemsFound = matchString(stringToFind, arraytouse);
+					if (itemsFound.length > 0) {
+						filtered = new Array();
+					}
+					Array.prototype.push.apply(filtered, itemsFound);
 				}
-				let itemsFound = matchString(stringToFind, arraytouse);
-				if (itemsFound.length > 0) {
-					filtered = new Array();
-				}
-				Array.prototype.push.apply(filtered, itemsFound);
 			}
-		}
-		else {
-			Array.prototype.push.apply(filtered, matchString(stringsToFind, filelist));
-		}
-		// console.log(filtered, stringsToFind)
-		if (filtered.length > 0) {
-			filesFound(removeDuplicates(filtered, "id"), callback, getone);
-			return;
-		}
-		callback(null);
-	});
+			else {
+				Array.prototype.push.apply(filtered, matchString(stringsToFind, filelist));
+			}
+			// console.log(filtered, stringsToFind)
+			if (filtered.length > 0) {
+				filesFound(removeDuplicates(filtered, "id"), callback, getone);
+				return;
+			}
+			callback(null);
+		});
 };
 
+/**
+ * @param {any[]} arr
+ * @param {string} prop
+ */
 function removeDuplicates(arr, prop) {
 	let new_arr = [];
 	let lookup = {};
@@ -76,6 +93,11 @@ function removeDuplicates(arr, prop) {
 }
 
 
+/**
+ * @param {any[] | { name: string; id: string; }[]} files
+ * @param {{ (data: any): void; (arg0: any): void; (arg0: { path: any; name: any; }): void; (arg0: { path: any; name: any; }): void; }} callback
+ * @param {boolean} getone
+ */
 function filesFound(files, callback, getone) {
 	if (!getone) {
 		callback(files);
@@ -84,57 +106,52 @@ function filesFound(files, callback, getone) {
 	let file = getRandomFile(files);
 	let extention = file.name.split(".").pop();
 	if (extention == "gif") {
-		gifs.GetGifURL(file.id, function (fileurl) {
-			callback({ path: fileurl, name: file.name });
-		});
-	} else {
-		images.GetImageURL(file.id, extention, function (fileurl) {
-			callback({ path: fileurl, name: file.name });
-		});
+		gifs.GetGifURL(file.id, /**
+			 * @param {any} fileurl
+			 */
+			function (fileurl) {
+				callback({ path: fileurl, name: file.name });
+			});
+	// } else {
+	// 	images.GetImageURL(file.id, extention, /**
+	// 		 * @param {any} fileurl
+	// 		 */
+	// 		function (fileurl) {
+	// 			callback({ path: fileurl, name: file.name });
+	// 		});
 	}
 }
 
+/**
+ * @param {{ filter: (arg0: (xa: any) => any) => void; }} x
+ * @param {string} y
+ * @param {string} z
+ */
 function filterXwhereYhasZ(x, y, z) {
 	z = z.toLowerCase();
-	return x.filter(function (xa) {
-		if (xa[y] !== undefined) {
-			if (Array.isArray(xa[y])) {
-				if (xa[y].indexOf(z) > -1) {
-					return xa;
+	return x.filter(
+		/**
+		 * @param {{ [x: string]: { indexOf: (arg0: any) => number; }; }} xa
+		 */
+		function (xa) {
+			if (xa[y] !== undefined) {
+				if (Array.isArray(xa[y])) {
+					if (xa[y].indexOf(z) > -1) {
+						return xa;
+					}
+				}
+				else {
+					if (xa[y].indexOf(z) > -1) {
+						return xa;
+					}
 				}
 			}
-			else {
-				if (xa[y].indexOf(z) > -1) {
-					return xa;
-				}
-			}
-		}
-	});
+		});
 }
 
+/**
+ * @param {any[]} filelist
+ */
 function getRandomFile(filelist) {
 	return filelist[Math.floor(Math.random() * (filelist.length))];
 }
-
-module.exports = findFile;
-
-filesFound([{ name: "testgif.gif", id: "0BwoBPbVKwbI9QlRYVmRsbVhscGs" }], function (data) {
-	console.log(data);
-}, true);
-
-// findFile("ivy", function(data){
-//	 console.log("ivy", "image", data);
-// }, true, "image");
-// findFile("ivy", function(data){
-//	 console.log("ivy", "gif", data);
-// }, true, "gif");
-// findFile("harv", function(data){
-//	 console.log("harv", "image", data);
-// }, true, "image");
-// findFile("harv", function(data){
-//	 console.log("harv", "gif", data);
-// }, true, "gif");
-// findFile("league_faculty_harvey_custard_custaru_hug_attack", function(data){
-//	 console.log("league_faculty_harvey_custard_custaru_hug_attack", "gif", data);
-// }, true, "gif");
-
