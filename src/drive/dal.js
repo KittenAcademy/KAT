@@ -35,7 +35,13 @@ const filesToTags = files => {
 /**
  * @param {string} fileName
  */
-const getTag = fileName => fileName.replace(/\.[^/.]+$/, "").split("_").map(item => item.trim().toLowerCase());
+const getTag = fileName => {
+	let retval = fileName.replace(/\.[^/.]+$/, "").split("_").map(item => item.trim().toLowerCase())
+	retval = retval.filter(function(elem, pos) {
+		return retval.indexOf(elem) == pos;
+	});
+	return retval;
+};
 
 module.exports.listAllFiles = async () => {
 	const files = [];

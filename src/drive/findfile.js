@@ -44,6 +44,7 @@ const findFile = async (stringToFind) => {
 // findFile("Cooper space cat")
 // findFile("MR DaNcE")
 // findFile("MRa DaNcE")
+// findFile("ari hisses")
 // findFile("MR a DANcE")
 // findFile("MR a makes wave DAaNcE")
 module.exports = findFile;

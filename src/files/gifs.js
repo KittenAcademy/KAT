@@ -13,19 +13,19 @@ module.exports.updateNewGifs = /**
  */
 	async nextPage => {
 		const recentlyChangedFiles = await gifDal.listRecentlyChangedFiles(nextPage);
-		let aFileWasFound;
+		// let aFileWasFound;
 		nextPage = recentlyChangedFiles.nextPageToken;
 		for (let i = 0; i < recentlyChangedFiles.files.length; i++) {
 			const recentlyChangedFile = recentlyChangedFiles.files[i];
 			if (await databaseDal.FindGif(recentlyChangedFile)) {
-				aFileWasFound = true; // TODO: Don't leave this commented
-				// await uploadGif(recentlyChangedFile.id);
+				// TODO Check if GIF is uploaded and upload anyway if missing
+				// TODO check if gif in DB matches what is parsed from the gifDal
 			} else {
 				await uploadGif(recentlyChangedFile.id);
 				await databaseDal.AddGif(recentlyChangedFile);
 			}
 		}
-		if (!aFileWasFound) {
+		if (nextPage) {
 			await this.updateNewGifs(nextPage);
 		}
 	}
