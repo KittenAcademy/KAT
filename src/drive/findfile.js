@@ -24,17 +24,29 @@ function matchString(stringToFind, filelist) {
 /**
  * @param {string} stringToFind
  */
-module.exports = async (stringToFind) => {
+const findFile = async (stringToFind) => {
 	let file = {};
+	let files = [];
 	if (stringToFind.indexOf(' ') >= 0) {
-		file = await databaseDal.FindGifByTags(stringToFind.split(" "));
+		files = await databaseDal.FindGifByTags(stringToFind.toLowerCase().split(" "));
 	} else {
-		file = await databaseDal.SearchForGif(stringToFind);
+		files = await databaseDal.SearchForGif(stringToFind.toLowerCase());
 	}
-	if (!file) return null;
+	// console.log(stringToFind,"files raw", files)
+	// console.log(stringToFind,"files results", files[0].results)
+	if (files.length < 1) return null;
+	file = files[0].results[Math.floor(Math.random()*files[0].results.length)];;
 	file.path = cloudFront.getURL(file.id) + ".gif";
+	// console.log(stringToFind, "file", file)
 	return file;
 };
+
+// findFile("Cooper space cat")
+// findFile("MR DaNcE")
+// findFile("MRa DaNcE")
+// findFile("MR a DANcE")
+// findFile("MR a makes wave DAaNcE")
+module.exports = findFile;
 
 /**
  * @param {any[]} arr
