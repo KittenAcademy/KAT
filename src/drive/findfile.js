@@ -29,13 +29,16 @@ const findFile = async (stringToFind) => {
 	let files = [];
 	if (stringToFind.indexOf(' ') >= 0) {
 		files = await databaseDal.FindGifByTags(stringToFind.toLowerCase().split(" "));
+		
+		if (files.length < 1) return null;
+		file = files[0].results[Math.floor(Math.random()*files[0].results.length)];;
 	} else {
 		files = await databaseDal.SearchForGif(stringToFind.toLowerCase());
+		if (files.length < 1) return null;
+		file = files[0];
 	}
 	// console.log(stringToFind,"files raw", files)
 	// console.log(stringToFind,"files results", files[0].results)
-	if (files.length < 1) return null;
-	file = files[0].results[Math.floor(Math.random()*files[0].results.length)];;
 	file.path = cloudFront.getURL(file.id) + ".gif";
 	// console.log(stringToFind, "file", file)
 	return file;

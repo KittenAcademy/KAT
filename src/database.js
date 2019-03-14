@@ -31,26 +31,10 @@ const GifCacheModel = mongoose.model(
 );
 
 module.exports.SearchForGif = name => {
-  return new Promise((resolve, reject) => {
-    return GifsModel.aggregate([
-      { $match: { name: new RegExp(name, "i") } },
-      { $sample: { size: 1 } }
-    ]).exec((err, result) => {
-      if (err) {
-        reject(err);
-      } else {
-        const file = result[0];
-        if (!file) {
-          reject("Not Found");
-        } else {
-          resolve({
-            name: file.name,
-            id: file.id
-          });
-        }
-      }
-    });
-  });
+  return GifsModel.aggregate([
+    { $match: { name: new RegExp(name, "i") } },
+    { $sample: { size: 1 } }
+  ]).exec();
 };
 
 module.exports.RandomGif = () => {
