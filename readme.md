@@ -5,3 +5,6 @@ Files are pulled from [drive](https://drive.google.com/drive/folders/0BwoBPbVKwb
 make sure you have a privatesettings.js or that you store settings in your local environment
 
 Watch the API limits https://console.developers.google.com/apis/api/drive.googleapis.com/quotas?project=beaming-team-148423&duration=PT1H
+
+Gif DB is here https://mlab.com/databases/kat/collections/gifs
+Gif are stored here https://s3.console.aws.amazon.com/s3/buckets/kittenacademy/?region=us-west-2&tab=overview	

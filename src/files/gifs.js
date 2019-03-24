@@ -6,9 +6,8 @@ const cloudFront = require("../cloudFront/cloudFront.js"),
 	driveauth = require("../drive/driveauth.js");
 
 module.exports.GetGifURL = gifid => cloudFront.getURL(gifid + ".gif");
-;
 
-module.exports.updateNewGifs = /**
+const updateNewGifs = /**
  * @param {string} nextPage
  */
 	async nextPage => {
@@ -18,7 +17,11 @@ module.exports.updateNewGifs = /**
 		for (let i = 0; i < recentlyChangedFiles.files.length; i++) {
 			const recentlyChangedFile = recentlyChangedFiles.files[i];
 			if (await databaseDal.FindGif(recentlyChangedFile)) {
-				// TODO Check if GIF is uploaded and upload anyway if missing
+				s3.fileUploaded(`${recentlyChangedFile.id}.gif`, async function (isUploaded) {
+					if (!isUploaded) {
+						await uploadGif(recentlyChangedFile.id);
+					}
+				});
 				// TODO check if gif in DB matches what is parsed from the gifDal
 			} else {
 				await uploadGif(recentlyChangedFile.id);
@@ -30,7 +33,10 @@ module.exports.updateNewGifs = /**
 		}
 	}
 
-this.updateNewGifs();
+setInterval(updateNewGifs,86400000); // daily
+updateNewGifs(null);
+
+module.exports.updateNewGifs = updateNewGifs;
 
 const uploadGif = async fileid => {
 	let filename = fileid + ".gif";
