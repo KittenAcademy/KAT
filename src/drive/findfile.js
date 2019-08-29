@@ -3,6 +3,7 @@
 // let allimages = require("./images.js");
 const gifs = require("../files/gifs.js"),
 	cloudFront = require("../cloudFront/cloudFront.js"),
+	findFileHelpers = require("./findFileHelpers.js"),
 	databaseDal = require("../database");
 // let images = require("../files/images.js");
 
@@ -29,9 +30,12 @@ const findFile = async (stringToFind) => {
 	let files = [];
 	if (stringToFind.indexOf(' ') >= 0) {
 		files = await databaseDal.FindGifByTags(stringToFind.toLowerCase().split(" "));
-		
-		if (files.length < 1) return null;
-		file = files[0].results[Math.floor(Math.random()*files[0].results.length)];;
+		if (files.length < 1 && files[0].results.length < 1) return null;
+		var resultsArray = files[0].results;
+		resultsArray.forEach(element => {		
+			console.log("found", element, "from", stringToFind);
+		});
+		file = findFileHelpers.pickFileFromArray(stringToFind, resultsArray);
 	} else {
 		files = await databaseDal.SearchForGif(stringToFind.toLowerCase());
 		if (files.length < 1) return null;

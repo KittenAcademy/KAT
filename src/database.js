@@ -79,8 +79,9 @@ module.exports.FindGifsByTag = async tag => {
  * @param { string[] } tagsArray
  */
 module.exports.FindGifByTags = async tagsArray => {
+  console.log("looking for", tagsArray)
   // @ts-ignore
-  return GifsModel.aggregate([
+  var retval = GifsModel.aggregate([
     { $match: { tags: { $in: tagsArray } } },
     { $project: { tagsCopy: "$tags", tags: 1, name: 1, id: 1 } },
     { $unwind: "$tags" },
@@ -103,7 +104,8 @@ module.exports.FindGifByTags = async tagsArray => {
     { $sort: { _id: -1 } },
 	{ $limit: 1 }
   ])
-    .exec();
+	.exec();
+	return retval;
 };
 
 module.exports.FindGif = /**
