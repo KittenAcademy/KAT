@@ -9,8 +9,7 @@ let dbinstance = setting("dbinstance");
 if (!dbpass || !dbuser || !dbinstance) {
   throw "DB SETTINGS NOT CONFIGURED";
 }
-
-let connectString = `mongodb://${dbuser}:${dbpass}@ds0${dbinstance}.mlab.com:${dbinstance}/kat`;
+let connectString = `mongodb+srv://${dbuser}:${dbpass}@kat.pdpvx.mongodb.net/${dbinstance}?retryWrites=true&w=majority`;
 mongoose.connect(connectString);
 
 const GifsModel = mongoose.model(
