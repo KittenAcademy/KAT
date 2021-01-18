@@ -23,6 +23,7 @@ client.on("message", function (event) {
 		}
 		let moduleName = event.content.split(" ")[0];
 		let payload = {
+			author: event.author,
 			user: event.author.username,
 			userID: event.author.id,
 			channelID: event.channel.id,
@@ -46,10 +47,6 @@ client.on("disconnect", function (erMsg, code, something) {
 	connectToDiscord();
 });
 
-/**
- * @param {{ user: any; userID?: string; channelID?: string; message?: string; event?: import("discord.js").Message; moduleName: any; command: any; }} payload
- * @param {import("discord.js").TextChannel | import("discord.js").DMChannel | import("discord.js").GroupDMChannel} channel
- */
 const HandleBotCommand = async (payload, channel) => {
 	if (payload.moduleName == "allgifs") {
 		channel.send("Here you go " + payload.user + " these are all my gifs for " + payload.command + " http://gifs.kitten.academy/tags.html?tag=" + payload.command);
@@ -116,7 +113,31 @@ const HandleBotCommand = async (payload, channel) => {
 			channel.send("Sorry " + payload.user + " I dunno lol ¯\\_(ツ)_/¯");
 			return;
 		}
-		const embed = new Discord.RichEmbed()
+		try {
+			const attachment = new Discord.MessageAttachment(file.path, file.name);
+			const options = {
+				files: [attachment],
+				reply: payload.author
+			};
+			await channel.send(`I found \`${file.name}\` for you`, options);
+		} catch (ex) {
+			const embed = new Discord.MessageEmbed()
+				.setTitle(file.name)
+				.setColor(0xBADA55)
+				.setDescription("Here you go " + payload.user + " I found a gif for you")
+				.setImage(file.path)
+				.setTimestamp()
+				.setURL(file.path)
+			channel.send({ embed });
+		}
+	}
+	else if (payload.moduleName == "oldgif") {
+		const file = await findfile(payload.command)
+		if (!file) {
+			channel.send("Sorry " + payload.user + " I dunno lol ¯\\_(ツ)_/¯");
+			return;
+		}
+		const embed = new Discord.MessageEmbed()
 			.setTitle(file.name)
 			.setColor(0xBADA55)
 			.setDescription("Here you go " + payload.user + " I found a gif for you")
@@ -124,6 +145,6 @@ const HandleBotCommand = async (payload, channel) => {
 			.setTimestamp()
 			.setURL(file.path)
 		channel.send({ embed });
-	
+
 	}
 }

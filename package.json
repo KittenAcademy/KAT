@@ -6,20 +6,20 @@
   "repository": "",
   "author": "Mark Dell <madelk@gmail.com>",
   "dependencies": {
-    "aws-sdk": "^2.7.19",
-    "discord.js": "^11.4.2",
+    "aws-sdk": "^2.828.0",
+    "discord.js": "^12",
     "express": "^4.14.0",
-    "google-auth-library": "^3.1.0",
-    "googleapis": "^42.0.0",
-    "moment": "^2.16.0",
-    "mongoose": "^5.10.10"
+    "google-auth-library": "^6.1.4",
+    "googleapis": "^67.0.0",
+    "moment": "^2.29.1",
+    "mongoose": "^5.11.12"
   },
   "devDependencies": {
-    "eslint": ">=0.19.0 <3.0.0",
-    "eslint-watch": "^6.0.0",
-    "jest": "^24.9.0",
-    "mocha": "^6.2.0",
-    "nodemon": "^1.11.0"
+    "eslint": "^7.18.0",
+    "eslint-watch": "^7.0.0",
+    "jest": "^26.6.3",
+    "mocha": "^8.2.1",
+    "nodemon": "^2.0.7"
   },
   "scripts": {
     "start": "node ./app.js",
