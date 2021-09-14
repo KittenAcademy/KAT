@@ -32,9 +32,10 @@ const updateNewGifs = /**
 			await this.updateNewGifs(nextPage);
 		}
 	}
-
-setInterval(updateNewGifs,86400000); // daily
-updateNewGifs(null);
+if(!process.argv.includes("--nowatchdrive")) {
+	setInterval(updateNewGifs,86400000); // daily
+	updateNewGifs(null);
+}
 
 module.exports.updateNewGifs = updateNewGifs;
 

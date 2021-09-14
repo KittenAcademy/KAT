@@ -5,11 +5,11 @@ let setting = require("./settings.js");
 let dbuser = setting("dbuser");
 let dbpass = setting("dbpass");
 let dbinstance = setting("dbinstance");
-
-if (!dbpass || !dbuser || !dbinstance) {
+let dbconnection = setting("dbconnection");
+if ((!dbpass || !dbuser || !dbinstance) && !dbconnection) {
   throw "DB SETTINGS NOT CONFIGURED";
 }
-let connectString = `mongodb+srv://${dbuser}:${dbpass}@kat.pdpvx.mongodb.net/${dbinstance}?retryWrites=true&w=majority`;
+let connectString = setting("dbconnection") || `mongodb+srv://${dbuser}:${dbpass}@kat.pdpvx.mongodb.net/${dbinstance}?retryWrites=true&w=majority`;
 mongoose.connect(connectString);
 
 const GifsModel = mongoose.model(
