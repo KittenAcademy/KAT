@@ -31,7 +31,7 @@ module.exports.makeTagsDistinct = filesArray => {
 	});
 };
 module.exports.pickSomethingAtRandom = filesArray => {
-	if (filesArray.length === 1) return filesArray;
+	if (filesArray.length === 1) return filesArray[0];
 	const indexToUse = Math.floor(Math.random() * filesArray.length);
 	return filesArray[indexToUse];
 };
