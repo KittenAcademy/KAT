@@ -28,23 +28,10 @@ function matchString(stringToFind, filelist) {
 const findFile = async (stringToFind) => {
 	let file = {};
 	let files = [];
-	if (stringToFind.indexOf(' ') >= 0) {
-		files = await databaseDal.FindGifByTags(stringToFind.toLowerCase().split(" "));
-		if (files.length < 1 && files[0].results.length < 1) return null;
-		var resultsArray = files[0].results;
-		resultsArray.forEach(element => {		
-			console.log("found", element, "from", stringToFind);
-		});
-		file = findFileHelpers.pickFileFromArray(stringToFind, resultsArray);
-	} else {
-		files = await databaseDal.SearchForGif(stringToFind.toLowerCase());
-		if (files.length < 1) return null;
-		file = files[0];
-	}
-	// console.log(stringToFind,"files raw", files)
-	// console.log(stringToFind,"files results", files[0].results)
+	files = await databaseDal.FindGifByTags(stringToFind.toLowerCase().split(" "));
+	if (files.length < 1 && files[0].results.length < 1) return null;
+	file = findFileHelpers.pickFileFromArray(files);
 	file.path = cloudFront.getURL(file.id) + ".gif";
-	// console.log(stringToFind, "file", file)
 	return file;
 };
 
