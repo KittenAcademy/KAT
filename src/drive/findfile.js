@@ -29,7 +29,7 @@ const findFile = async (stringToFind) => {
 	let file = {};
 	let files = [];
 	files = await databaseDal.FindGifByTags(stringToFind.toLowerCase().split(" "));
-	if (files.length < 1 && files[0].results.length < 1) return null;
+	if (files.length < 1) return null;
 	file = findFileHelpers.pickFileFromArray(files);
 	file.path = cloudFront.getURL(file.id) + ".gif";
 	return file;
