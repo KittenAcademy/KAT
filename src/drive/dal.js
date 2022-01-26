@@ -4,7 +4,7 @@ const { google } = require("googleapis"),
 	driveauth = require("./driveauth.js")
 
 /**
- * @param {string} [pageToken] 
+ * @param {string} [pageToken]
  */
 module.exports.listRecentlyChangedFiles = async pageToken => {
 	const fetchPageResult = await fetchPage(pageToken, {
@@ -17,8 +17,8 @@ module.exports.listRecentlyChangedFiles = async pageToken => {
 }
 
 /**
- * @param {Object[]} files 
- * @param {string} files[].name 
+ * @param {Object[]} files
+ * @param {string} files[].name
  * @param {string} files[].description
  * @param {string[]} files[].tags
  */
@@ -27,7 +27,7 @@ const filesToTags = files => {
 		let file = files[i];
 		if (!file.name) continue;
 		file.name = file.name.toLowerCase();
-		file.tags = getTag(file.name);
+		file.tags = getTagsFromFileName(file.name);
 	}
 	return files;
 }
@@ -35,7 +35,7 @@ const filesToTags = files => {
 /**
  * @param {string} fileName
  */
-const getTag = fileName => {
+const getTagsFromFileName = module.exports.getTagsFromFileName = fileName => {
 	let retval = fileName.replace(/\.[^/.]+$/, "").split("_").map(item => item.trim().toLowerCase())
 	retval = retval.filter(function(elem, pos) {
 		return retval.indexOf(elem) == pos;
@@ -60,7 +60,7 @@ module.exports.listAllFiles = async () => {
 };
 
 /**
- * @param {string} pageToken 
+ * @param {string} pageToken
  * @param {any} query
  */
 const fetchPage = async (pageToken, query) => {

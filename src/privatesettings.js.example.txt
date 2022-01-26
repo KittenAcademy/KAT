@@ -1,0 +1,8 @@
+module.exports = {
+	"dbconnection": "mongodb+srv://user:password@something.mongodb.net/kat?retryWrites=true&w=majority",
+	"DiscordToken": "<discord bot token>",
+	"ClientSecret": "<drive oauth client secret>",
+	"CommandAllowlist": {
+		"renamegif": [<String IDs of channels where this command is available>]
+	}
+}
