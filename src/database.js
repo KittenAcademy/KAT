@@ -2,6 +2,7 @@
 
 let mongoose = require("mongoose");
 let setting = require("./settings.js");
+let driveDal = require("./drive/dal.js");
 let dbuser = setting("dbuser");
 let dbpass = setting("dbpass");
 let dbinstance = setting("dbinstance");
@@ -116,6 +117,26 @@ module.exports.AddGif = /**
 		gif.name = file.name;
 		gif.tags = file.tags;
 		return gif.save();
+	};
+
+module.exports.RenameGif = /**
+* @param {string} oldName
+* @param {string} newName
+*/ async (oldName, newName) => {
+		const newTags = driveDal.getTagsFromFileName(newName);
+		return await GifsModel.findOneAndUpdate(
+			{name: oldName},
+			{
+				$set: {
+					name: newName,
+					tags: newTags
+				}
+			},
+			{
+				useFindAndModify: false,
+				new: true
+			}
+		);
 	};
 
 //allowed, blocked, notfound

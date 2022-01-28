@@ -1,4 +1,6 @@
 const Discord = require('discord.js'),
+	cloudFront = require('../cloudFront/cloudFront.js'),
+	databaseDal = require("../database.js"),
 	setting = require("../settings.js"),
 	findfile = require("../drive/findfile.js"),
 	// getlatest = require("../drive/getlatest.js"),
@@ -32,6 +34,10 @@ client.on("message", function (event) {
 			moduleName: moduleName.replace("!", "").toLowerCase(),
 			command: event.content.replace(moduleName, "").substring(1)
 		};
+		const allowlist = setting("CommandAllowlist") || {};
+		if(payload.moduleName in allowlist && !allowlist[payload.moduleName].includes(event.channel.id)) {
+			return;
+		}
 		HandleBotCommand(payload, event.channel);
 	}
 	catch (ex) {
@@ -146,5 +152,19 @@ const HandleBotCommand = async (payload, channel) => {
 			.setURL(file.path)
 		channel.send({ embed });
 
+	}
+	else if(payload.moduleName == "renamegif") {
+		const [oldName, newName] = payload.command.split(" ");
+		if(!(oldName||"").endsWith(".gif") || !(newName||"").endsWith(".gif")) {
+			channel.send("Usage: `!renamegif current_name.gif new_name.gif`");
+			return;
+		}
+		const file = await databaseDal.RenameGif(oldName, newName);
+		if(file) {
+			channel.send(`<${cloudFront.getURL(file.id)}.gif> is now \`${file.name}\``);
+			return;
+		} else {
+			channel.send(`Could not find \`${oldName}\` :(`);
+		}
 	}
 }
