@@ -120,12 +120,12 @@ module.exports.AddGif = /**
 	};
 
 module.exports.RenameGif = /**
-* @param {string} oldName
-* @param {string} newName
+* @param {string} oldName old filename or id
+* @param {string} newName new filename
 */ async (oldName, newName) => {
 		const newTags = driveDal.getTagsFromFileName(newName);
-		return await GifsModel.findOneAndUpdate(
-			{name: oldName},
+		const query = (condition) => GifsModel.findOneAndUpdate(
+			condition,
 			{
 				$set: {
 					name: newName,
@@ -137,6 +137,8 @@ module.exports.RenameGif = /**
 				new: true
 			}
 		);
+		// Prioritize gifs with a matching name over gifs with a matching id, in case a file name is a duplicate of some id.
+		return (await query({name: oldName})) || (await query({id: oldName}));
 	};
 
 //allowed, blocked, notfound

@@ -155,8 +155,8 @@ const HandleBotCommand = async (payload, channel) => {
 	}
 	else if(payload.moduleName == "renamegif") {
 		const [oldName, newName] = payload.command.split(" ");
-		if(!(oldName||"").endsWith(".gif") || !(newName||"").endsWith(".gif")) {
-			channel.send("Usage: `!renamegif current_name.gif new_name.gif`");
+		if(!(newName||"").endsWith(".gif")) {
+			channel.send("Usage: `!renamegif current_name.gif new_name.gif` or `!renamegif id new_name.gif`");
 			return;
 		}
 		const file = await databaseDal.RenameGif(oldName, newName);
