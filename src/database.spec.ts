@@ -96,3 +96,89 @@ test("should find all gifs for tag", async () => {
     new Set(matchingGifs.map(expect.objectContaining))
   );
 });
+
+test("should find gifs by name regex", async () => {
+  const matchingGifs = [
+    { id: "id1", name: "file_acd.gif", tags: [] },
+    { id: "id2", name: "file_abcd.gif", tags: [] },
+    { id: "id3", name: "file_abbcd.gif", tags: [] }
+  ];
+  const nonMatchingGifs = [
+    { id: "id4", name: "file_abccd.gif", tags: [] },
+    { id: "id5", name: "file_abc.gif", tags: [] }
+  ];
+  await Promise.all([...matchingGifs, ...nonMatchingGifs].map(database.AddGif));
+
+  const result = await database.FindGifsByNameRegex("_ab*cd");
+
+  expect(new Set(result.map((gif: any) => gif.toObject()))).toEqual(
+    new Set(matchingGifs.map(expect.objectContaining))
+  );
+});
+
+test("should bulk rename gifs", async () => {
+  const gifs = [
+    { id: "id1", name: "one_file.gif", tags: ["one", "file"] },
+    { id: "id2", name: "other_file.gif", tags: ["other", "file"] },
+    {
+      id: "id3",
+      name: "dont_rename_this.gif",
+      tags: ["dont", "rename", "this"]
+    }
+  ];
+  await Promise.all(gifs.map(database.AddGif));
+  const renames = [
+    { id: "id1", oldName: "one_file.gif", newName: "new_meme.gif" },
+    { id: "id2", oldName: "other_file.gif", newName: "cool_video.gif" }
+  ];
+
+  const result = await database.BulkRenameGifs(renames);
+
+  expect(result).toEqual(2);
+  expect((await database.FindGif({ id: "id1" })).toJSON()).toMatchObject({
+    id: "id1",
+    name: "new_meme.gif",
+    tags: ["new", "meme"]
+  });
+  expect((await database.FindGif({ id: "id2" })).toJSON()).toMatchObject({
+    id: "id2",
+    name: "cool_video.gif",
+    tags: ["cool", "video"]
+  });
+  expect((await database.FindGif({ id: "id3" })).toJSON()).toMatchObject(
+    gifs[2]
+  );
+});
+
+test("should not rename gifs if a new name already exists", async () => {
+  const gifs = [
+    { id: "id1", name: "one_file.gif", tags: ["one", "file"] },
+    { id: "id2", name: "other_file.gif", tags: ["other", "file"] },
+    { id: "id3", name: "old_file.gif", tags: ["old", "file"] }
+  ];
+  await Promise.all(gifs.map(database.AddGif));
+  const renames = [
+    { id: "id1", oldName: "one_file.gif", newName: "new_file.gif" },
+    { id: "id2", oldName: "other_file.gif", newName: "old_file.gif" }
+  ];
+
+  await expect(database.BulkRenameGifs(renames)).rejects.toMatch(
+    "1 gif(s) with specified new names already exist"
+  );
+});
+
+test("should not rename gifs if one of the gifs is not found", async () => {
+  const gifs = [
+    { id: "id1", name: "one_file.gif", tags: ["one", "file"] },
+    { id: "id2", name: "other_file.gif", tags: ["other", "file"] }
+  ];
+  await Promise.all(gifs.map(database.AddGif));
+  const renames = [
+    { id: "id1", oldName: "one_file.gif", newName: "new_file.gif" },
+    { id: "id2", oldName: "missing_file.gif", newName: "not_missing_file.gif" }
+  ];
+
+  await expect(database.BulkRenameGifs(renames)).rejects.toMatch(
+    "1 gif(s) were not found"
+  );
+});

@@ -10,13 +10,16 @@
   "author": "Mark Dell <madelk@gmail.com>",
   "dependencies": {
     "aws-sdk": "^2.828.0",
+    "csv-parse": "^5.0.4",
+    "csv-stringify": "^6.0.5",
     "discord-api-types": "^0.29.0",
     "discord.js": "^13.6.0",
     "express": "^4.14.0",
     "google-auth-library": "^6.1.4",
     "googleapis": "^67.0.0",
     "moment": "^2.29.1",
-    "mongoose": "^5.11.12"
+    "mongoose": "^5.11.12",
+    "node-fetch": "^2.6.7"
   },
   "devDependencies": {
     "@types/express": "^4.17.13",
