@@ -8,8 +8,7 @@ const config: Config.InitialOptions = {
   transform: {
     "^.+\\.(ts|tsx)$": "ts-jest",
   },
-  rootDir: "src",
-  testMatch: ["**/__tests__/**/*.[jt]s?(x)", "**/?(*.)+(spec|test).[jt]s?(x)"],
+  testMatch: ["**/src/**/?(*.)+(spec|test).[jt]s?(x)"],
 };
 
 export default config;
