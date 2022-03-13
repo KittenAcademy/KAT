@@ -7,7 +7,7 @@ import setting, { settingsGoogle } from "../settings";
 const SCOPES = [
   "https://www.googleapis.com/auth/drive.metadata.readonly",
   "https://www.googleapis.com/auth/drive.photos.readonly",
-  "https://www.googleapis.com/auth/drive.readonly",
+  "https://www.googleapis.com/auth/drive.readonly"
 ];
 
 // let TOKEN_PATH =  path.join(__dirname,"..", "cache", "drivetoken.json"); //TOKEN_DIR + "drivetoken.json";
@@ -40,7 +40,7 @@ export const GetAuthURL = function (callback: {
     const oauth2Client = oauth2Clientret.message;
     const authUrl = oauth2Client.generateAuthUrl({
       access_type: "offline",
-      scope: SCOPES,
+      scope: SCOPES
     });
     callback({ success: true, message: authUrl });
   });

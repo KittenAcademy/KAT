@@ -13,7 +13,7 @@ const setup = () => {
   if (!secretAccessKey) return;
   s3 = new AWS.S3({
     apiVersion: "2006-03-01",
-    credentials: new AWS.Credentials(accessKey, secretAccessKey),
+    credentials: new AWS.Credentials(accessKey, secretAccessKey)
   });
 };
 
@@ -86,7 +86,7 @@ export const uploadFromStream = function (
     Body: pass,
     ContentType: type,
     StorageClass: "REDUCED_REDUNDANCY",
-    CacheControl: "max-age=31536000",
+    CacheControl: "max-age=31536000"
   };
   s3.upload(params, function (err: Error, data: AWS.S3.ManagedUpload.SendData) {
     callback(err, data);

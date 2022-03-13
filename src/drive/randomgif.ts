@@ -14,7 +14,7 @@ const GetFiles = async (cantloop?: boolean) => {
   UpcomingFiles.push({
     filePath: filePath,
     tags: file.tags,
-    name: file.name,
+    name: file.name
   });
 };
 

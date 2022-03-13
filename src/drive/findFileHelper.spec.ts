@@ -7,7 +7,7 @@ describe("pickSomethingAtRandom", () => {
     const expected: FindGifByTagsInterface = {
       id: 1,
       name: "test",
-      score: 1,
+      score: 1
     };
     const filesArray: FindGifByTagsInterface[] = [expected];
 

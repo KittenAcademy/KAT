@@ -10,7 +10,7 @@ if (!fs.existsSync(dir)) {
 export default async function (fileId: any, auth: any, dest?: any) {
   const drive = google.drive({
     version: "v3",
-    auth: auth,
+    auth: auth
   });
   return new Promise<void>(async (resolve, reject) => {
     let progress = 0;

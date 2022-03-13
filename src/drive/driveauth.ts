@@ -43,7 +43,7 @@ interface cacheInterface {
 }
 
 const Cache: cacheInterface = {
-  expires: 0,
+  expires: 0
 };
 
 function GetCache() {
