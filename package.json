@@ -1,6 +1,9 @@
 {
   "name": "kat-ing",
   "version": "0.0.0",
+  "engines": {
+    "node": "16.14.0"
+  },
   "description": "Got gif.",
   "main": "app.js",
   "repository": "",
