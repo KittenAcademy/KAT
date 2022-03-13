@@ -23,6 +23,7 @@ export default function (settingName: keyof settings) {
 
 export interface settings {
   ClientSecret: settingsGoogle;
+  dbconnection?: string;
   dbinstance: string;
   dbpass: string;
   dbuser: string;

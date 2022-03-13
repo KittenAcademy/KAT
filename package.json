@@ -35,6 +35,7 @@
     "eslint-watch": "^7.0.0",
     "jest": "^27.5.1",
     "jest-cli": "^27.5.1",
+    "mongodb-memory-server": "^8.4.0",
     "mocha": "^8.2.1",
     "nodemon": "^2.0.7",
     "prettier": "^2.5.1",
