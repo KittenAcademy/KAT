@@ -43,8 +43,8 @@ client.on("message", function (event) {
     if (event.content[0] != "!") {
       return;
     }
-    let moduleName = event.content.split(" ")[0];
-    let payload: payload = {
+    const moduleName = event.content.split(" ")[0];
+    const payload: payload = {
       author: event.author,
       user: event.author.username,
       userID: event.author.id,
@@ -89,19 +89,19 @@ const HandleBotCommand = async (
         payload.command
     );
   } else if (payload.moduleName == "livestreams") {
-    let url =
+    const url =
       "https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=UC83RKJs4eKHVE9v0YUyqzgg&eventType=live&maxResults=10&order=viewCount&type=video&key=" +
       setting("GooleAPIKey");
     https
       .get(url, (res) => {
-        var body = "";
+        let body = "";
 
         res.on("data", function (chunk) {
           body += chunk;
         });
 
         res.on("end", function () {
-          let result = JSON.parse(body);
+          const result = JSON.parse(body);
           console.log("Got a response: ", result);
           let retval = "Here are the current streams \n";
           for (let i = 0; i < result.items.length; i++) {
@@ -114,10 +114,10 @@ const HandleBotCommand = async (
         channel.send("Oh dear! " + e);
       });
   } else if (payload.moduleName == "joke") {
-    var message = jokes();
+    const message = jokes();
     channel.send(message);
   } else if (payload.moduleName == "catfact") {
-    var message = catfacts();
+    const message = catfacts();
     channel.send(message);
   } else if (payload.moduleName == "whosefault") {
     channel.send("It's DJ's fault. Don't listen to that liar Toonki!");

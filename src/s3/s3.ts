@@ -5,7 +5,7 @@ import URL from "url";
 
 const accessKey = setting("AWS_ACCESS_KEY_ID");
 const secretAccessKey = setting("AWS_SECRET_ACCESS_KEY");
-let S3_BUCKET = setting("S3_BUCKET") as string;
+const S3_BUCKET = setting("S3_BUCKET") as string;
 
 let s3: AWS.S3;
 const setup = () => {
@@ -22,8 +22,8 @@ export const fileUploaded = function (
   key: any,
   callback: (arg0: boolean) => void
 ) {
-  let KEY = key;
-  let params: AWS.S3.HeadObjectRequest = { Bucket: S3_BUCKET, Key: KEY };
+  const KEY = key;
+  const params: AWS.S3.HeadObjectRequest = { Bucket: S3_BUCKET, Key: KEY };
   s3.headObject(params, function (err, data) {
     //4332406
     if (err) {
@@ -47,8 +47,8 @@ export const deleteFile = function (
   key: any,
   callback: (arg0: boolean) => void
 ) {
-  let KEY = key;
-  let params = { Bucket: S3_BUCKET, Key: KEY };
+  const KEY = key;
+  const params = { Bucket: S3_BUCKET, Key: KEY };
   s3.deleteObject(params, function (err, data) {
     if (err) {
       switch (err.code) {
@@ -65,9 +65,9 @@ export const deleteFile = function (
 };
 
 export const getURL = function (key: any) {
-  let KEY = key;
-  let params = { Bucket: S3_BUCKET, Key: KEY };
-  let url = URL.parse(s3.getSignedUrl("getObject", params));
+  const KEY = key;
+  const params = { Bucket: S3_BUCKET, Key: KEY };
+  const url = URL.parse(s3.getSignedUrl("getObject", params));
   url.search = null;
   return URL.format(url);
 };
@@ -77,10 +77,10 @@ export const uploadFromStream = function (
   type: any,
   callback: (arg0: Error, arg1: AWS.S3.ManagedUpload.SendData) => void
 ) {
-  let KEY = key;
-  let pass = new stream.PassThrough();
+  const KEY = key;
+  const pass = new stream.PassThrough();
 
-  let params = {
+  const params = {
     Bucket: S3_BUCKET,
     Key: KEY,
     Body: pass,

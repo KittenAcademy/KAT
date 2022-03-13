@@ -1,14 +1,14 @@
 import { google } from "googleapis";
 import fs from "fs";
 
-let dir = "./cache";
+const dir = "./cache";
 
 if (!fs.existsSync(dir)) {
   fs.mkdirSync(dir);
 }
 
 export default async function (fileId: any, auth: any, dest?: any) {
-  let drive = google.drive({
+  const drive = google.drive({
     version: "v3",
     auth: auth,
   });

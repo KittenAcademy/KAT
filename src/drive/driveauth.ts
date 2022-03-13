@@ -4,7 +4,7 @@ import { GetGifCache } from "../database";
 import setting, { settingsGoogle } from "../settings";
 
 export default async () => {
-  let cache = GetCache();
+  const cache = GetCache();
   if (cache) {
     return cache;
   }
@@ -42,7 +42,7 @@ interface cacheInterface {
   value?: OAuth2Client;
 }
 
-let Cache: cacheInterface = {
+const Cache: cacheInterface = {
   expires: 0,
 };
 

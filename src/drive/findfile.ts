@@ -5,7 +5,7 @@ import { FindGifByTags, FindGifByTagsInterface, RandomGif } from "../database";
 export default async (stringToFind: string) => {
   let file: foundFileInterface | null = null;
   if (stringToFind) {
-    let files = await FindGifByTags(stringToFind.toLowerCase().split(" "));
+    const files = await FindGifByTags(stringToFind.toLowerCase().split(" "));
     if (files.length < 1) return null;
     file = pickFileFromArray(files);
   } else {

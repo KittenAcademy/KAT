@@ -4,7 +4,7 @@ import { ParsedQs } from "qs";
 import { SetCache } from "../database";
 import setting, { settingsGoogle } from "../settings";
 
-let SCOPES = [
+const SCOPES = [
   "https://www.googleapis.com/auth/drive.metadata.readonly",
   "https://www.googleapis.com/auth/drive.photos.readonly",
   "https://www.googleapis.com/auth/drive.readonly",
@@ -19,12 +19,12 @@ function GetOauth2Client(callback: {
   (oauth2Clientret: any): void;
   (arg0: { success: boolean; message: any }): void;
 }) {
-  let credentials = setting("ClientSecret") as unknown as settingsGoogle;
-  let clientSecret = credentials.installed.client_secret;
-  let clientId = credentials.installed.client_id;
-  let redirectUrl = credentials.installed.redirect_uris[0];
-  let auth = new (googleAuth as any)();
-  let oauth2Client = new auth.OAuth2(clientId, clientSecret, redirectUrl);
+  const credentials = setting("ClientSecret") as unknown as settingsGoogle;
+  const clientSecret = credentials.installed.client_secret;
+  const clientId = credentials.installed.client_id;
+  const redirectUrl = credentials.installed.redirect_uris[0];
+  const auth = new (googleAuth as any)();
+  const oauth2Client = new auth.OAuth2(clientId, clientSecret, redirectUrl);
   callback({ success: true, message: oauth2Client });
 }
 
@@ -37,8 +37,8 @@ export const GetAuthURL = function (callback: {
       callback(oauth2Clientret);
       return;
     }
-    let oauth2Client = oauth2Clientret.message;
-    let authUrl = oauth2Client.generateAuthUrl({
+    const oauth2Client = oauth2Clientret.message;
+    const authUrl = oauth2Client.generateAuthUrl({
       access_type: "offline",
       scope: SCOPES,
     });
@@ -58,7 +58,7 @@ export const UseCode = function (
       callback(oauth2Clientret);
       return;
     }
-    let oauth2Client = oauth2Clientret.message;
+    const oauth2Client = oauth2Clientret.message;
     oauth2Client.getToken(code, function (err: any, token: any) {
       if (err) {
         callback({ success: false, message: err });

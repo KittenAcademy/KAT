@@ -5,7 +5,7 @@ const UpcomingFiles = new Array();
 const GetFiles = async (cantloop?: boolean) => {
   if (!cantloop) cantloop = false;
   const file = await RandomGif();
-  let filePath = getURL(file.id + ".gif");
+  const filePath = getURL(file.id + ".gif");
   if (UpcomingFiles.length < 3 && !cantloop) {
     GetFiles(true);
   } else {
