@@ -1,18 +1,16 @@
 // HELP: https://www.npmjs.com/package/mongoose
 
-let mongoose = require("mongoose");
-let setting = require("./settings.js");
-let driveDal = require("./drive/dal.js");
+import mongoose from "mongoose";
+import setting from "./settings";
+import { getTagsFromFileName } from "./drive/dal";
+import { ParsedQs } from "qs";
 let dbuser = setting("dbuser");
 let dbpass = setting("dbpass");
 let dbinstance = setting("dbinstance");
-let dbconnection = setting("dbconnection");
-if ((!dbpass || !dbuser || !dbinstance) && !dbconnection) {
+if (!dbpass || !dbuser || !dbinstance) {
   throw "DB SETTINGS NOT CONFIGURED";
 }
-let connectString =
-  setting("dbconnection") ||
-  `mongodb+srv://${dbuser}:${dbpass}@kat.pdpvx.mongodb.net/${dbinstance}?retryWrites=true&w=majority`;
+let connectString = `mongodb+srv://${dbuser}:${dbpass}@kat.pdpvx.mongodb.net/${dbinstance}?retryWrites=true&w=majority`;
 mongoose.connect(connectString);
 
 const GifsModel = mongoose.model(
@@ -32,14 +30,14 @@ const GifCacheModel = mongoose.model(
   })
 );
 
-module.exports.SearchForGif = (name) => {
+export const SearchForGif = (name: string | RegExp) => {
   return GifsModel.aggregate([
     { $match: { name: new RegExp(name, "i") } },
     { $sample: { size: 1 } },
   ]).exec();
 };
 
-module.exports.RandomGif = () => {
+export const RandomGif = () => {
   return new Promise((resolve, reject) => {
     GifsModel.aggregate([{ $sample: { size: 1 } }]).exec((err, result) => {
       if (err) {
@@ -56,31 +54,22 @@ module.exports.RandomGif = () => {
         }
       }
     });
-  });
+  }) as any;
 };
 
-const test = async () => {
-  console.log("Searching For cat", await this.SearchForGif("cat"));
-  console.log("Searching For dance", await this.SearchForGif("dance"));
-  console.log("Searching For cat", await this.SearchForGif("cat"));
-  console.log("RandomGif", await this.RandomGif());
-};
-// test();
-
-/**
- * @param { string } tag
- */
-module.exports.FindGifsByTag = async (tag) => {
+export const FindGifsByTag = async (tag: string) => {
   // @ts-ignore
   const query = GifsModel.where({
     tags: tag,
   });
   return query.find();
 };
-/**
- * @param { string[] } tagsArray
- */
-module.exports.FindGifByTags = async (tagsArray) => {
+export interface FindGifByTagsInterface {
+  id: number;
+  name: string;
+  score: number;
+}
+export const FindGifByTags = async (tagsArray: string[]) => {
   console.log("looking for", tagsArray);
   // @ts-ignore
   var retval = await GifsModel.aggregate()
@@ -99,13 +88,10 @@ module.exports.FindGifByTags = async (tagsArray) => {
       score: { $meta: "searchScore" },
     })
     .limit(10);
-  // .exec();
-  return retval;
+  return retval as FindGifByTagsInterface[];
 };
 
-module.exports.FindGif = /**
- * @param {{ id: string; }} file
- */ async (file) => {
+export const FindGif = async (file: { id: any }) => {
   // @ts-ignore
   const query = GifsModel.where({
     id: file.id,
@@ -113,22 +99,21 @@ module.exports.FindGif = /**
   return query.findOne();
 };
 
-module.exports.AddGif = /**
- * @param {{ id: string; name: string; tags: string[] }} file
- */ async (file) => {
+export const AddGif = async (file: { id: any; name: any; tags: any }) => {
   let gif = new GifsModel();
   gif.id = file.id;
+  // @ts-ignore
   gif.name = file.name;
+  // @ts-ignore
   gif.tags = file.tags;
   return gif.save();
 };
 
-module.exports.RenameGif = /**
- * @param {string} oldName old filename or id
- * @param {string} newName new filename
- */ async (oldName, newName) => {
-  const newTags = driveDal.getTagsFromFileName(newName);
-  const query = (condition) =>
+export const RenameGif = async (oldName: any, newName: any) => {
+  const newTags = getTagsFromFileName(newName);
+  const query = (
+    condition: mongoose.FilterQuery<mongoose.Document<any>> | undefined
+  ) =>
     GifsModel.findOneAndUpdate(
       condition,
       {
@@ -143,19 +128,23 @@ module.exports.RenameGif = /**
       }
     );
   // Prioritize gifs with a matching name over gifs with a matching id, in case a file name is a duplicate of some id.
-  return (await query({ name: oldName })) || (await query({ id: oldName }));
+  return (
+    (await query({ name: oldName })) || ((await query({ id: oldName })) as any)
+  );
 };
 
-//allowed, blocked, notfound
-module.exports.GetCache = /**
- * @param {string} cacheKey
- * @param {{ (arg0: any, arg1: string): void; (arg0: string, arg1: any): void; (arg0: string, arg1: any): void; }} callback
- */ function (cacheKey, callback) {
+export const GetGifCache = function (
+  cacheKey: string,
+  callback: {
+    (err: any, token: any): void;
+    (arg0: string, arg1: string | null): void;
+  }
+) {
   // @ts-ignore
   let query = GifCacheModel.where({
     key: cacheKey,
   });
-  query.findOne(function (err, found) {
+  query.findOne(function (err: any, found: { value: any }) {
     if (err) {
       callback(err, "");
       return;
@@ -170,10 +159,20 @@ module.exports.GetCache = /**
   });
 };
 
-module.exports.SetCache = function (key, value, callback) {
+export const SetCache = function (
+  key: string,
+  value: any,
+  callback: {
+    (result: any): void;
+    (arg0: { err?: mongoose.NativeError; result?: string }): void;
+  }
+) {
   let gifCache = new GifCacheModel();
+  // @ts-ignore
   gifCache.key = key;
+  // @ts-ignore
   gifCache.value = value;
+  // @ts-ignore
   gifCache.dateAdded = new Date();
   gifCache.save(function (err) {
     if (err) {
@@ -189,13 +188,16 @@ module.exports.SetCache = function (key, value, callback) {
   });
 };
 
-module.exports.DeleteCache = function (key, callback) {
+export const DeleteCache = function (
+  key: string,
+  callback: (arg0: { err?: any; result?: string }) => void
+) {
   GifCacheModel.findOneAndRemove(
     {
       key: key,
-      // }, function(err, doc, result) {
     },
-    function (err) {
+    // @ts-ignore
+    function (err: any) {
       if (err) {
         callback({
           err: err,
