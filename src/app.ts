@@ -7,7 +7,7 @@ import express from "express";
 import http from "http";
 import { GetAuthURL, UseCode } from "./drive/auth";
 import randomgif from "./drive/randomgif";
-import { FindGifsByTag } from "./database";
+import { FindGifsByTag, init } from "./database";
 import { connectToDiscord } from "./discord/bot";
 
 let app = express();
@@ -41,5 +41,9 @@ const backlog = 511;
 const callback = function () {
   console.log("Server listening at", `${hostname}:${port}`);
 };
-server.listen(port as number, hostname, backlog, callback);
+
+init.then(() => {
+  server.listen(port as number, hostname, backlog, callback);
+});
+
 connectToDiscord();
