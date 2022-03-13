@@ -11,25 +11,26 @@ pipelines:
         name: prep
         script:
           - npm install
-          - npm install -g typescript
-          - npm install -g ts-node
         caches:
           - node
     - step:
         name: Test
         script:
+          - npm install
           - npm test
         caches:
           - node
     - step:
         name: Lint
         script:
+          - npm install
           - npm run lint
         caches:
           - node
     - step:
         name: Build
         script:
+          - npm install
           - npm run build
         caches:
           - node
