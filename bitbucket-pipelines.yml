@@ -15,10 +15,15 @@ pipelines:
             script:
               - npm install
               - npm test
-#        - step:
-#            name: Code linting
-#            script:
-#              - npm install eslint
-#              - npx eslint .
-#            caches:
-#              - node
+       - step:
+           name: Code linting
+           script:
+             - npm run lint
+           caches:
+             - node
+       - step:
+           name: Code building
+           script:
+             - npm run build
+           caches:
+             - node
