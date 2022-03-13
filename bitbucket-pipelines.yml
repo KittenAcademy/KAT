@@ -11,22 +11,21 @@ pipelines:
         name: prep
         script:
           - npm install
-    - parallel:
-        - step:
-            name: Build and Test
-            caches:
-              - node
-            script:
-              - npm test
-        - step:
-            name: Code linting
-            script:
-              - npm run lint
-            caches:
-              - node
-        - step:
-            name: Code building
-            script:
-              - npm run build
-            caches:
-              - node
+    - step:
+        name: Test
+        caches:
+          - node
+        script:
+          - npm test
+    - step:
+        name: Lint
+        script:
+          - npm run lint
+        caches:
+          - node
+    - step:
+        name: Build
+        script:
+          - npm run build
+        caches:
+          - node
