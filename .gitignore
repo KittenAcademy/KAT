@@ -1,4 +1,6 @@
 /.c9
 /node_modules
 src/privatesettings.js
+src/privatesettings.ts
 *.zip
+/dist

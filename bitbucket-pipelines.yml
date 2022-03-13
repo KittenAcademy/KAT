@@ -7,18 +7,32 @@ image: node:16
 
 pipelines:
   default:
-    - parallel:
-        - step:
-            name: Build and Test
-            caches:
-              - node
-            script:
-              - npm install
-              - npm test
-#        - step:
-#            name: Code linting
-#            script:
-#              - npm install eslint
-#              - npx eslint .
-#            caches:
-#              - node
+    - step:
+        name: prep
+        script:
+          - npm install
+        caches:
+          - node
+    - step:
+        name: Test
+        script:
+          - npm install
+          - mv ./src/privatesettings.ts.example.txt ./src/privatesettings.ts
+          - npm test
+        caches:
+          - node
+    - step:
+        name: Lint
+        script:
+          - npm install
+          - npm run lint
+        caches:
+          - node
+    - step:
+        name: Build
+        script:
+          - npm install
+          - mv ./src/privatesettings.ts.example.txt ./src/privatesettings.ts
+          - npm run build
+        caches:
+          - node

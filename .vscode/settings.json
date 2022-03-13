@@ -1,5 +1,6 @@
 // Place your settings in this file to overwrite default and user settings.
 {
+	"editor.formatOnSave": true,
     "files.exclude": {
         "**/.git": true,
         "**/.svn": true,
@@ -8,5 +9,6 @@
         "**/node_modules": true
     },
     "editor.insertSpaces": false,
-    "editor.detectIndentation": false
+    "editor.detectIndentation": false,
+	"editor.defaultFormatter": "esbenp.prettier-vscode"
 }
