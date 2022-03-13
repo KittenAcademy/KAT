@@ -18,7 +18,7 @@ const GifsModel = mongoose.model(
   new mongoose.Schema({
     id: String,
     name: String,
-    tags: [String],
+    tags: [String]
   })
 );
 const GifCacheModel = mongoose.model(
@@ -26,14 +26,14 @@ const GifCacheModel = mongoose.model(
   new mongoose.Schema({
     dateAdded: Date,
     key: String,
-    value: mongoose.Schema.Types.Mixed,
+    value: mongoose.Schema.Types.Mixed
   })
 );
 
 export const SearchForGif = (name: string | RegExp) => {
   return GifsModel.aggregate([
     { $match: { name: new RegExp(name, "i") } },
-    { $sample: { size: 1 } },
+    { $sample: { size: 1 } }
   ]).exec();
 };
 
@@ -49,7 +49,7 @@ export const RandomGif = () => {
         } else {
           resolve({
             name: file.name,
-            id: file.id,
+            id: file.id
           });
         }
       }
@@ -60,7 +60,7 @@ export const RandomGif = () => {
 export const FindGifsByTag = async (tag: string) => {
   // @ts-ignore
   const query = GifsModel.where({
-    tags: tag,
+    tags: tag
   });
   return query.find();
 };
@@ -78,14 +78,14 @@ export const FindGifByTags = async (tagsArray: string[]) => {
       text: {
         query: tagsArray.join(" "),
         path: {
-          wildcard: "*",
-        },
-      },
+          wildcard: "*"
+        }
+      }
     })
     .project({
       id: 1,
       name: 1,
-      score: { $meta: "searchScore" },
+      score: { $meta: "searchScore" }
     })
     .limit(10);
   return retval as FindGifByTagsInterface[];
@@ -94,7 +94,7 @@ export const FindGifByTags = async (tagsArray: string[]) => {
 export const FindGif = async (file: { id: any }) => {
   // @ts-ignore
   const query = GifsModel.where({
-    id: file.id,
+    id: file.id
   });
   return query.findOne();
 };
@@ -119,12 +119,12 @@ export const RenameGif = async (oldName: any, newName: any) => {
       {
         $set: {
           name: newName,
-          tags: newTags,
-        },
+          tags: newTags
+        }
       },
       {
         useFindAndModify: false,
-        new: true,
+        new: true
       }
     );
   // Prioritize gifs with a matching name over gifs with a matching id, in case a file name is a duplicate of some id.
@@ -142,7 +142,7 @@ export const GetGifCache = function (
 ) {
   // @ts-ignore
   let query = GifCacheModel.where({
-    key: cacheKey,
+    key: cacheKey
   });
   query.findOne(function (err: any, found: { value: any }) {
     if (err) {
@@ -177,12 +177,12 @@ export const SetCache = function (
   gifCache.save(function (err) {
     if (err) {
       callback({
-        err: err,
+        err: err
       });
       return;
     }
     callback({
-      result: key + " added",
+      result: key + " added"
     });
     return;
   });
@@ -194,18 +194,18 @@ export const DeleteCache = function (
 ) {
   GifCacheModel.findOneAndRemove(
     {
-      key: key,
+      key: key
     },
     // @ts-ignore
     function (err: any) {
       if (err) {
         callback({
-          err: err,
+          err: err
         });
         return;
       }
       callback({
-        result: key + " removed from cache",
+        result: key + " removed from cache"
       });
       return;
     }

@@ -44,7 +44,7 @@
     "typescript": "^4.6.2"
   },
   "scripts": {
-    "start": "node ./app.js",
+    "start": "node ./dist/app.js",
     "lint": "eslint src/**/*.ts",
     "lint:watch": "npm run lint -- --watch",
     "test": "jest",

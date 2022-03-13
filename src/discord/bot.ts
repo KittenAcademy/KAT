@@ -7,16 +7,20 @@ import catfacts from "./module/catfacts";
 import jokes from "./module/jokes";
 import https from "https";
 const client = new Discord.Client({
-  intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
+  restRequestTimeout: 60000,
+  intents: [
+    Intents.FLAGS.GUILDS,
+    Intents.FLAGS.GUILD_MESSAGES,
+    Intents.FLAGS.DIRECT_MESSAGES
+  ],
+  partials: ["CHANNEL"]
 });
 
-const connectToDiscord = () => {
+export const connectToDiscord = () => {
   const token = setting("DiscordToken");
   if (!token) throw new Error("No Discord Token");
-
   client.login(token);
 };
-connectToDiscord();
 
 type someKindOfChannel =
   | Discord.DMChannel
@@ -30,43 +34,46 @@ interface payload {
   userID: string;
   channelID: string;
   message: string;
-  event: Discord.Message<boolean>;
+  discordMessage: Discord.Message<boolean>;
   moduleName: string;
   command: string;
 }
 
-client.on("message", function (event) {
+client.on("messageCreate", function (discordMessage) {
   try {
-    if (event.author.bot) {
+    if (discordMessage.author.bot) {
       return;
     }
-    if (event.content[0] != "!") {
+    if (discordMessage.content[0] != "!") {
       return;
     }
-    const moduleName = event.content.split(" ")[0];
+    const moduleName = discordMessage.content.split(" ")[0];
     const payload: payload = {
-      author: event.author,
-      user: event.author.username,
-      userID: event.author.id,
-      channelID: event.channel.id,
-      message: event.content,
-      event: event,
+      author: discordMessage.author,
+      user: discordMessage.author.username,
+      userID: discordMessage.author.id,
+      channelID: discordMessage.channel.id,
+      message: discordMessage.content,
+      discordMessage,
       moduleName: moduleName.replace("!", "").toLowerCase(),
-      command: event.content.replace(moduleName, "").substring(1),
+      command: discordMessage.content.replace(moduleName, "").substring(1)
     };
     const allowlist = setting("CommandAllowlist") || ({} as any);
     if (
       payload.moduleName in allowlist &&
-      !allowlist[payload.moduleName].includes(event.channel.id)
+      !allowlist[payload.moduleName].includes(discordMessage.channel.id)
     ) {
       return;
     }
-    HandleBotCommand(payload, event.channel);
+    HandleBotCommand(payload, discordMessage.channel);
   } catch (ex) {
     console.error("errorwithbotonmessage", ex);
   }
 });
 
+client.on("ready", function (client) {
+  console.log("discord client ready", client.user.username);
+});
 client.on("disconnect", function (erMsg, code, something) {
   console.log("Bot disconnected reconnecting");
   console.log("erMsg", erMsg);
@@ -80,13 +87,8 @@ const HandleBotCommand = async (
   channel: someKindOfChannel
 ) => {
   if (payload.moduleName == "allgifs") {
-    channel.send(
-      "Here you go " +
-        payload.user +
-        " these are all my gifs for " +
-        payload.command +
-        " http://gifs.kitten.academy/tags.html?tag=" +
-        payload.command
+    payload.discordMessage.reply(
+      `Here you go ${payload.user} these are all my gifs for ${payload.command} http://gifs.kitten.academy/tags.html?tag=${payload.command}`
     );
   } else if (payload.moduleName == "livestreams") {
     const url =
@@ -107,34 +109,43 @@ const HandleBotCommand = async (
           for (let i = 0; i < result.items.length; i++) {
             retval += `${result.items[i].snippet.title}: https://www.youtube.com/watch?v=${result.items[i].id.videoId}\n`;
           }
-          channel.send(retval);
+          payload.discordMessage.reply(retval);
         });
       })
       .on("error", function (e) {
-        channel.send("Oh dear! " + e);
+        payload.discordMessage.reply("Oh dear! " + e);
       });
   } else if (payload.moduleName == "joke") {
     const message = jokes();
-    channel.send(message);
+    payload.discordMessage.reply(message);
   } else if (payload.moduleName == "catfact") {
     const message = catfacts();
-    channel.send(message);
+    payload.discordMessage.reply(message);
   } else if (payload.moduleName == "whosefault") {
-    channel.send("It's DJ's fault. Don't listen to that liar Toonki!");
+    payload.discordMessage.reply(
+      "It's DJ's fault. Don't listen to that liar Toonki!"
+    );
   } else if (payload.moduleName == "gif") {
     const file = await findfile(payload.command);
     if (!file || !file.path) {
-      channel.send("Sorry " + payload.user + " I dunno lol ¯\\_(ツ)_/¯");
+      payload.discordMessage.reply(
+        "Sorry " + payload.user + " I dunno lol ¯\\_(ツ)_/¯"
+      );
       return;
     }
     try {
       const attachment = new Discord.MessageAttachment(file.path, file.name);
+      attachment.url = file.path;
       const options: Discord.MessageOptions = {
         content: `I found \`${file.name}\` for you`,
-        files: [attachment],
-        reply: { messageReference: payload.author.id },
+        files: [
+          {
+            attachment: file.path,
+            name: file.name
+          }
+        ]
       };
-      channel.send(options);
+      payload.discordMessage.reply(options);
     } catch (ex) {
       const embed = new Discord.MessageEmbed()
         .setTitle(file.name)
@@ -145,12 +156,17 @@ const HandleBotCommand = async (
         .setImage(file.path)
         .setTimestamp()
         .setURL(file.path);
-      channel.send({ embeds: [embed], files: [file.path] });
+      payload.discordMessage.reply({
+        embeds: [embed],
+        files: [file.path]
+      });
     }
   } else if (payload.moduleName == "oldgif") {
     const file = await findfile(payload.command);
     if (!file || !file.path) {
-      channel.send("Sorry " + payload.user + " I dunno lol ¯\\_(ツ)_/¯");
+      payload.discordMessage.reply(
+        "Sorry " + payload.user + " I dunno lol ¯\\_(ツ)_/¯"
+      );
       return;
     }
     const embed = new Discord.MessageEmbed()
@@ -160,21 +176,23 @@ const HandleBotCommand = async (
       .setImage(file.path)
       .setTimestamp()
       .setURL(file.path);
-    channel.send({ embeds: [embed], files: [file.path] });
+    payload.discordMessage.reply({ embeds: [embed], files: [file.path] });
   } else if (payload.moduleName == "renamegif") {
     const [oldName, newName] = payload.command.split(" ");
     if (!(newName || "").endsWith(".gif")) {
-      channel.send(
+      payload.discordMessage.reply(
         "Usage: `!renamegif current_name.gif new_name.gif` or `!renamegif id new_name.gif`"
       );
       return;
     }
     const file = await RenameGif(oldName, newName);
     if (file && file.name) {
-      channel.send(`<${getURL(file.id)}.gif> is now \`${file.name}\``);
+      payload.discordMessage.reply(
+        `<${getURL(file.id)}.gif> is now \`${file.name}\``
+      );
       return;
     } else {
-      channel.send(`Could not find \`${oldName}\` :(`);
+      payload.discordMessage.reply(`Could not find \`${oldName}\` :(`);
     }
   }
 };
