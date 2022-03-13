@@ -17,6 +17,7 @@ pipelines:
         name: Test
         script:
           - npm install
+          - mv ./src/privatesettings.ts.example.txt ./src/privatesettings.ts
           - npm test
         caches:
           - node
