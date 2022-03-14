@@ -27,12 +27,14 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
 
+      - name: Set up private settings example
+        run: mv ./src/privatesettings.ts.example.txt ./src/privatesettings.ts
+
       - name: Test
-      - run: mv ./src/privatesettings.ts.example.txt ./src/privatesettings.ts
-      - run: npm test
+        run: npm test
 
       - name: Lint
-      - run: npm run lint
+        run: npm run lint
 
       - name: Build
-      - run: npm run build
+        run: npm run build
