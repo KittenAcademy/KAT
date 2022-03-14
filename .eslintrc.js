@@ -3,8 +3,12 @@ module.exports = {
   extends: ["standard-react", "plugin:prettier/recommended"],
   parserOptions: {
     ecmaVersion: 2020,
-    sourceType: "module"
+    project: ["tsconfig.json"],
+    sourceType: "module",
   },
+  plugins: [
+    "@typescript-eslint"
+  ],
   env: {
     es6: true,
     node: true
@@ -16,6 +20,7 @@ module.exports = {
     "no-multi-spaces": "error",
     "space-in-parens": "error",
     "no-multiple-empty-lines": "error",
-    "prefer-const": "error"
+    "prefer-const": "error",
+    "@typescript-eslint/no-floating-promises": ["error"],
   }
 };

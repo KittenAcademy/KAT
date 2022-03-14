@@ -16,10 +16,10 @@ const client = new Discord.Client({
   partials: ["CHANNEL"]
 });
 
-export const connectToDiscord = () => {
+export const connectToDiscord = async () => {
   const token = setting("DiscordToken");
   if (!token) throw new Error("No Discord Token");
-  client.login(token);
+  await client.login(token);
 };
 
 type someKindOfChannel =
@@ -39,7 +39,7 @@ interface payload {
   command: string;
 }
 
-client.on("messageCreate", function (discordMessage) {
+client.on("messageCreate", async function (discordMessage) {
   try {
     if (discordMessage.author.bot) {
       return;
@@ -65,7 +65,7 @@ client.on("messageCreate", function (discordMessage) {
     ) {
       return;
     }
-    HandleBotCommand(payload, discordMessage.channel);
+    await HandleBotCommand(payload, discordMessage.channel);
   } catch (ex) {
     console.error("errorwithbotonmessage", ex);
   }
@@ -74,12 +74,12 @@ client.on("messageCreate", function (discordMessage) {
 client.on("ready", function (client) {
   console.log("discord client ready", client.user.username);
 });
-client.on("disconnect", function (erMsg, code, something) {
+client.on("disconnect", async function (erMsg, code, something) {
   console.log("Bot disconnected reconnecting");
   console.log("erMsg", erMsg);
   console.log("code", code);
   console.log("something", something);
-  connectToDiscord();
+  await connectToDiscord();
 });
 
 const HandleBotCommand = async (
@@ -87,7 +87,7 @@ const HandleBotCommand = async (
   channel: someKindOfChannel
 ) => {
   if (payload.moduleName == "allgifs") {
-    payload.discordMessage.reply(
+    await payload.discordMessage.reply(
       `Here you go ${payload.user} these are all my gifs for ${payload.command} http://gifs.kitten.academy/tags.html?tag=${payload.command}`
     );
   } else if (payload.moduleName == "livestreams") {
@@ -98,37 +98,37 @@ const HandleBotCommand = async (
       .get(url, (res) => {
         let body = "";
 
-        res.on("data", function (chunk) {
+        res.on("data", async function (chunk) {
           body += chunk;
         });
 
-        res.on("end", function () {
+        res.on("end", async function () {
           const result = JSON.parse(body);
           console.log("Got a response: ", result);
           let retval = "Here are the current streams \n";
           for (let i = 0; i < result.items.length; i++) {
             retval += `${result.items[i].snippet.title}: https://www.youtube.com/watch?v=${result.items[i].id.videoId}\n`;
           }
-          payload.discordMessage.reply(retval);
+          await payload.discordMessage.reply(retval);
         });
       })
-      .on("error", function (e) {
-        payload.discordMessage.reply("Oh dear! " + e);
+      .on("error", async function (e) {
+        await payload.discordMessage.reply("Oh dear! " + e);
       });
   } else if (payload.moduleName == "joke") {
     const message = jokes();
-    payload.discordMessage.reply(message);
+    await payload.discordMessage.reply(message);
   } else if (payload.moduleName == "catfact") {
     const message = catfacts();
-    payload.discordMessage.reply(message);
+    await payload.discordMessage.reply(message);
   } else if (payload.moduleName == "whosefault") {
-    payload.discordMessage.reply(
+    await payload.discordMessage.reply(
       "It's DJ's fault. Don't listen to that liar Toonki!"
     );
   } else if (payload.moduleName == "gif") {
     const file = await findfile(payload.command);
     if (!file || !file.path) {
-      payload.discordMessage.reply(
+      await payload.discordMessage.reply(
         "Sorry " + payload.user + " I dunno lol ¯\\_(ツ)_/¯"
       );
       return;
@@ -145,7 +145,7 @@ const HandleBotCommand = async (
           }
         ]
       };
-      payload.discordMessage.reply(options);
+      await payload.discordMessage.reply(options);
     } catch (ex) {
       const embed = new Discord.MessageEmbed()
         .setTitle(file.name)
@@ -156,15 +156,14 @@ const HandleBotCommand = async (
         .setImage(file.path)
         .setTimestamp()
         .setURL(file.path);
-      payload.discordMessage.reply({
-        embeds: [embed],
-        files: [file.path]
+      await payload.discordMessage.reply({
+        embeds: [embed]
       });
     }
   } else if (payload.moduleName == "oldgif") {
     const file = await findfile(payload.command);
     if (!file || !file.path) {
-      payload.discordMessage.reply(
+      await payload.discordMessage.reply(
         "Sorry " + payload.user + " I dunno lol ¯\\_(ツ)_/¯"
       );
       return;
@@ -176,23 +175,23 @@ const HandleBotCommand = async (
       .setImage(file.path)
       .setTimestamp()
       .setURL(file.path);
-    payload.discordMessage.reply({ embeds: [embed], files: [file.path] });
+    await payload.discordMessage.reply({ embeds: [embed], files: [file.path] });
   } else if (payload.moduleName == "renamegif") {
     const [oldName, newName] = payload.command.split(" ");
     if (!(newName || "").endsWith(".gif")) {
-      payload.discordMessage.reply(
+      await payload.discordMessage.reply(
         "Usage: `!renamegif current_name.gif new_name.gif` or `!renamegif id new_name.gif`"
       );
       return;
     }
     const file = await RenameGif(oldName, newName);
     if (file && file.name) {
-      payload.discordMessage.reply(
+      await payload.discordMessage.reply(
         `<${getURL(file.id)}.gif> is now \`${file.name}\``
       );
       return;
     } else {
-      payload.discordMessage.reply(`Could not find \`${oldName}\` :(`);
+      await payload.discordMessage.reply(`Could not find \`${oldName}\` :(`);
     }
   }
 };

@@ -7,7 +7,7 @@ const GetFiles = async (cantloop?: boolean) => {
   const file = await RandomGif();
   const filePath = getURL(file.id + ".gif");
   if (UpcomingFiles.length < 3 && !cantloop) {
-    GetFiles(true);
+    void GetFiles(true);
   } else {
     UpcomingFiles.splice(0, 1);
   }
@@ -19,9 +19,12 @@ const GetFiles = async (cantloop?: boolean) => {
 };
 
 function RunLoop() {
-  setTimeout(function () {
-    GetFiles();
-    RunLoop();
+  setTimeout(async function () {
+    try {
+      await GetFiles();
+    } finally {
+      RunLoop();
+    }
   }, 10000);
 }
 RunLoop();
