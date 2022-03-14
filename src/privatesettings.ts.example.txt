@@ -21,7 +21,9 @@ const settings: settings = {
   AWS_SECRET_ACCESS_KEY: "",
   GooleAPIKey: "",
   CommandAllowlist: {
-    renamegif: [""],
+    bulkrenamegifs: [""],
+    bulkfindgifs: [""],
+    renamegif: [""]
   },
 };
 export default settings;

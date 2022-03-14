@@ -33,6 +33,8 @@ export interface settings {
   AWS_SECRET_ACCESS_KEY: string;
   GooleAPIKey: string;
   CommandAllowlist: {
+    bulkrenamegifs: string[];
+    bulkfindgifs: string[];
     renamegif: string[];
   };
 }
