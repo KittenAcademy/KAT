@@ -101,6 +101,16 @@ export const FindGif = async (file: { id: any }) => {
   return query.findOne();
 };
 
+export const FindGifsByNameRegex = async (regex: string): Promise<any[]> => {
+  // @ts-ignore
+  const query = GifsModel.where({
+    name: {
+      $regex: regex
+    }
+  });
+  return query.find();
+};
+
 export const AddGif = async (file: { id: any; name: any; tags: any }) => {
   let gif = new GifsModel();
   gif.id = file.id;
@@ -133,6 +143,53 @@ export const RenameGif = async (oldName: any, newName: any) => {
   return (
     (await query({ name: oldName })) || ((await query({ id: oldName })) as any)
   );
+};
+
+export const BulkRenameGifs = async (
+  files: { id: string; oldName: string; newName: string }[]
+): Promise<number> => {
+  // Best effort validation without locking the table.
+  const currentFiles = new Set(
+    (await GifsModel.find({ id: { $in: files.map((file) => file.id) } })).map(
+      (file: any) => JSON.stringify({ id: file.id, name: file.name })
+    )
+  );
+  const missingFiles = files.filter(
+    (file) =>
+      !currentFiles.has(JSON.stringify({ id: file.id, name: file.oldName }))
+  );
+  if (missingFiles.length) {
+    throw `${missingFiles.length} gif(s) were not found: \`${missingFiles
+      .slice(0, 5)
+      .map((f) => f.oldName)}\`${
+      missingFiles.length > 5 ? " and some more" : ""
+    }`;
+  }
+  const existingFilesWithNewName = await GifsModel.find({
+    name: { $in: files.map((file) => file.newName) }
+  });
+  if (existingFilesWithNewName.length) {
+    throw `${
+      existingFilesWithNewName.length
+    } gif(s) with specified new names already exist: \`${existingFilesWithNewName
+      .slice(0, 5)
+      .map((f: any) => f.name)}\`${
+      existingFilesWithNewName.length > 5 ? " and some more" : ""
+    }`;
+  }
+
+  // Bulk update gifs.
+  const result = await GifsModel.bulkWrite(
+    files.map((file) => ({
+      updateOne: {
+        filter: { id: file.id, name: file.oldName },
+        update: {
+          $set: { name: file.newName, tags: getTagsFromFileName(file.newName) }
+        }
+      }
+    }))
+  );
+  return result.matchedCount as number;
 };
 
 export const GetGifCache = function (

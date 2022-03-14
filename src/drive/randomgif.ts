@@ -1,4 +1,4 @@
-import { RandomGif } from "../database";
+import { init, RandomGif } from "../database";
 import { getURL } from "../cloudFront/cloudFront";
 const UpcomingFiles = new Array();
 
@@ -27,7 +27,7 @@ function RunLoop() {
     }
   }, 10000);
 }
-RunLoop();
+void init.then(RunLoop);
 
 export default function () {
   return UpcomingFiles;

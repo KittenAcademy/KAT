@@ -1,9 +1,14 @@
 import Discord, { Intents } from "discord.js";
 import { getURL } from "../cloudFront/cloudFront";
-import { RenameGif } from "../database";
+import { BulkRenameGifs, FindGifsByNameRegex, RenameGif } from "../database";
 import setting from "../settings";
 import findfile from "../drive/findfile";
 import catfacts from "./module/catfacts";
+import {
+  generateGifsCsvAttachment,
+  generateRenameGifsCsvAttachment,
+  parseBulkRenameAttachment
+} from "./csv";
 import jokes from "./module/jokes";
 import https from "https";
 const client = new Discord.Client({
@@ -37,6 +42,7 @@ interface payload {
   discordMessage: Discord.Message<boolean>;
   moduleName: string;
   command: string;
+  attachments: Discord.MessageAttachment[];
 }
 
 client.on("messageCreate", async function (discordMessage) {
@@ -56,7 +62,8 @@ client.on("messageCreate", async function (discordMessage) {
       message: discordMessage.content,
       discordMessage,
       moduleName: moduleName.replace("!", "").toLowerCase(),
-      command: discordMessage.content.replace(moduleName, "").substring(1)
+      command: discordMessage.content.replace(moduleName, "").substring(1),
+      attachments: [...discordMessage.attachments.values()]
     };
     const allowlist = setting("CommandAllowlist") || ({} as any);
     if (
@@ -193,5 +200,63 @@ const HandleBotCommand = async (
     } else {
       await payload.discordMessage.reply(`Could not find \`${oldName}\` :(`);
     }
+  } else if (payload.moduleName == "bulkrenamegifs") {
+    const [search, replace] = payload.command.split(" ");
+    if (search && replace && !payload.attachments.length) {
+      const gifs = await FindGifsByNameRegex(search);
+      if (!gifs.length) {
+        await channel.send(`No gifs matched pattern \`${search}\``);
+        return;
+      }
+      const renames = gifs
+        .map((gif) => ({
+          id: gif.id,
+          oldName: gif.name,
+          newName: gif.name.replace(new RegExp(search), replace)
+        }))
+        .filter((gif) => gif.oldName != gif.newName);
+      if (!renames.length) {
+        await channel.send(
+          `Replace has no effect on any of the ${gifs.length} gif(s)`
+        );
+        return;
+      }
+      const file = generateRenameGifsCsvAttachment(renames);
+      await channel.send({
+        content: `Generated CSV to rename ${renames.length} gifs. Please check the contents and then upload this to rename them!`,
+        files: [file]
+      });
+    } else if (!search && !replace && payload.attachments.length == 1) {
+      try {
+        const files = await parseBulkRenameAttachment(payload.attachments[0]);
+        const result = await BulkRenameGifs(files);
+        await channel.send(`Renamed ${result}/${files.length} gifs`);
+      } catch (err) {
+        if (typeof err === "string") {
+          await channel.send(`Failed to process CSV: ${err}`);
+        } else {
+          throw err;
+        }
+      }
+    } else {
+      await channel.send(
+        "Usage: `!bulkrenamegifs` and provide a three column CSV [id, old name, new name], OR `!bulkrenamegifs <search regex> <replace pattern>`"
+      );
+    }
+  } else if (payload.moduleName == "bulkfindgifs") {
+    if (payload.command.length == 0) {
+      await channel.send(`Usage: !bulkfindgifs <regex>`);
+      return;
+    }
+    const gifs = await FindGifsByNameRegex(payload.command);
+    if (!gifs.length) {
+      await channel.send(`No gifs found matching \`${payload.command}\``);
+      return;
+    }
+    const attachment = generateGifsCsvAttachment(gifs);
+    await channel.send({
+      content: `Found ${gifs.length} gif(s) matching \`${payload.command}\``,
+      files: [attachment]
+    });
   }
 };

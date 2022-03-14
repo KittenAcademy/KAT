@@ -44,6 +44,6 @@ const callback = function () {
 
 init.then(() => {
   server.listen(port as number, hostname, backlog, callback);
-});
 
-connectToDiscord();
+  connectToDiscord();
+});
