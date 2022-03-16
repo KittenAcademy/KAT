@@ -1,6 +1,12 @@
 import Discord, { Intents } from "discord.js";
 import { getURL } from "../cloudFront/cloudFront";
-import { BulkRenameGifs, FindGifsByNameRegex, RenameGif } from "../database";
+import {
+  BulkRenameGifs,
+  DeleteGif,
+  FindGif,
+  FindGifsByNameRegex,
+  RenameGif
+} from "../database";
 import setting from "../settings";
 import findfile from "../drive/findfile";
 import catfacts from "./module/catfacts";
@@ -11,6 +17,7 @@ import {
 } from "./csv";
 import jokes from "./module/jokes";
 import https from "https";
+import { deleteFile } from "../s3/s3";
 const client = new Discord.Client({
   restRequestTimeout: 60000,
   intents: [
@@ -258,5 +265,25 @@ const HandleBotCommand = async (
       content: `Found ${gifs.length} gif(s) matching \`${payload.command}\``,
       files: [attachment]
     });
+  } else if (payload.moduleName == "deletegif") {
+    const id = payload.command;
+    if (!id) {
+      await payload.discordMessage.reply(
+        "Usage: `!deletegif <id>` without .gif"
+      );
+      return;
+    }
+    const gif = await FindGif({ id });
+    if (!gif) {
+      await payload.discordMessage.reply(
+        `Could not find gif with id \`${id}\``
+      );
+      return;
+    }
+    await DeleteGif(id);
+    await deleteFile(id + ".gif");
+    await payload.discordMessage.reply(
+      `Gif \`${id}\` deleted. Hope you had a backup.`
+    );
   }
 };

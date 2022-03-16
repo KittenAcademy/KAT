@@ -38,6 +38,15 @@ test("should add and find gif", async () => {
   expect(result.toJSON()).toMatchObject(gif);
 });
 
+test("should delete gif", async () => {
+  const gif = { id: "id1", name: "my_file.gif", tags: ["my", "file"] };
+  await database.AddGif(gif);
+
+  const result = await database.DeleteGif("id1");
+  expect(result).toBeTruthy();
+  expect(await database.FindGif({ id: "id1" })).toBeFalsy();
+});
+
 test("should rename gif by name", async () => {
   const gif = { id: "id1", name: "my_file.gif", tags: ["my", "file"] };
   const gifWithWeirdId = {
