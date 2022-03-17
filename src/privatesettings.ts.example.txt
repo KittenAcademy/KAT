@@ -23,6 +23,7 @@ const settings: settings = {
   CommandAllowlist: {
     bulkrenamegifs: [""],
     bulkfindgifs: [""],
+    deletegif: [""],
     renamegif: [""]
   },
 };
