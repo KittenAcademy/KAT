@@ -45,7 +45,7 @@ export const updateNewGifs = async (nextPage?: nextPageToken) => {
 export const pollForGifsInDrive = () => {
   if (!process.argv.includes("--nowatchdrive")) {
     setInterval(updateNewGifs, 86400000); // daily
-    updateNewGifs();
+    void updateNewGifs();
   }
 };
 
@@ -58,7 +58,11 @@ const uploadGif = async (fileid: string) => {
         resolve(null);
       } else {
         const metatag = "image/jpeg";
-        drivestream(fileid, auth, uploadFromStream(filename, metatag, resolve));
+        void drivestream(
+          fileid,
+          auth,
+          uploadFromStream(filename, metatag, resolve)
+        );
       }
     });
   });

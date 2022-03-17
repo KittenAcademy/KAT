@@ -86,7 +86,7 @@ const fetchPage = async (
         console.log(err);
         console.log("Retrying in two seconds");
         setTimeout(() => {
-          fetchPage(pageToken, query);
+          void fetchPage(pageToken, query);
         }, 2000);
       });
   });
