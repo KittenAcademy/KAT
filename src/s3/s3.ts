@@ -43,24 +43,22 @@ export const fileUploaded = function (
   });
 };
 
-export const deleteFile = function (
-  key: any,
-  callback: (arg0: boolean) => void
-) {
-  const KEY = key;
-  const params = { Bucket: S3_BUCKET, Key: KEY };
-  s3.deleteObject(params, function (err, data) {
-    if (err) {
-      switch (err.code) {
-        case "NotFound":
-          callback(false);
-          return;
-        default:
-          throw err;
+export const deleteFile = function (key: string): Promise<boolean> {
+  const params = { Bucket: S3_BUCKET, Key: key };
+  return new Promise((res, rej) => {
+    s3.deleteObject(params, function (err, data) {
+      if (err) {
+        switch (err.code) {
+          case "NotFound":
+            res(false);
+            return;
+          default:
+            throw err;
+        }
+      } else {
+        res(true);
       }
-    } else {
-      callback(true);
-    }
+    });
   });
 };
 
