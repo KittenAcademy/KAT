@@ -192,6 +192,16 @@ export const BulkRenameGifs = async (
   return result.matchedCount as number;
 };
 
+export const DeleteGif = async function (id: string): Promise<boolean> {
+  try {
+    await GifsModel.deleteOne({ id: id }).exec();
+    return true;
+  } catch (err) {
+    console.error(err);
+    return false;
+  }
+};
+
 export const GetGifCache = function (
   cacheKey: string,
   callback: {

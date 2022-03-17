@@ -35,6 +35,7 @@ export interface settings {
   CommandAllowlist: {
     bulkrenamegifs: string[];
     bulkfindgifs: string[];
+    deletegif: string[];
     renamegif: string[];
   };
 }
