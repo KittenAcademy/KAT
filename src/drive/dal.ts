@@ -33,7 +33,7 @@ interface filesToTagsInterface extends drive_v3.Schema$File {
 }
 const filesToTags = (files: filesToTagsInterface[]) => {
   for (let i = 0; i < files.length; i++) {
-    let file = files[i];
+    const file = files[i];
     if (!file.name) continue;
     file.name = file.name.toLowerCase();
     file.tags = getTagsFromFileName(file.name);
@@ -67,7 +67,7 @@ const fetchPage = async (
   query?: any
 ): Promise<drive_v3.Schema$FileList> => {
   const auth = (await driveauth()) as any;
-  let drive = google.drive({
+  const drive = google.drive({
     version: "v3",
     auth: auth
   });

@@ -50,7 +50,7 @@ export const pollForGifsInDrive = () => {
 };
 
 const uploadGif = async (fileid: string) => {
-  let filename = fileid + ".gif";
+  const filename = fileid + ".gif";
   const auth = await driveauth();
   return new Promise((resolve, reject) => {
     fileUploaded(filename, function (isUploaded: boolean) {
