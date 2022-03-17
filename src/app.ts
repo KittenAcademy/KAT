@@ -9,6 +9,7 @@ import { GetAuthURL, UseCode } from "./drive/auth";
 import randomgif from "./drive/randomgif";
 import { FindGifsByTag, init } from "./database";
 import { connectToDiscord } from "./discord/bot";
+import { pollForGifsInDrive } from "./files/gifs";
 
 let app = express();
 let server = http.createServer(app);
@@ -44,6 +45,6 @@ const callback = function () {
 
 init.then(() => {
   server.listen(port as number, hostname, backlog, callback);
-
+  pollForGifsInDrive();
   connectToDiscord();
 });
