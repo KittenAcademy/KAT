@@ -3,20 +3,23 @@ import { OAuth2Client } from "google-auth-library";
 import { GetGifCache } from "../database";
 import setting, { settingsGoogle } from "../settings";
 
-export default async () => {
+const getAuth = async (): Promise<OAuth2Client> => {
   const cache = GetCache();
   if (cache) {
     return cache;
   }
-  return await authorize(setting("ClientSecret") as unknown as settingsGoogle);
+  const settingValue = setting("ClientSecret") as unknown as settingsGoogle;
+  const result = await authorize(settingValue);
+  return result;
 };
+export default getAuth;
 
 /**
  * Create an OAuth2 client with the given credentials, and then execute the
  * given callback function.
  */
 const authorize = (credentials: settingsGoogle) => {
-  return new Promise((resolve, reject) => {
+  return new Promise<OAuth2Client>((resolve, reject) => {
     const oAuth2Client = new OAuth2Client(
       credentials.installed.client_id,
       credentials.installed.client_secret,
