@@ -2,8 +2,8 @@ import { getURL } from "../cloudFront/cloudFront";
 import { listRecentlyChangedFiles, nextPageToken } from "../drive/dal";
 import { FindGif, AddGif } from "../database";
 import { fileUploaded, uploadFromStream } from "../s3/s3";
-import drivestream from "../drive/returnstream.js";
-import driveauth from "../drive/driveauth.js";
+import drivestream from "../drive/returnstream";
+import driveauth from "../drive/driveauth";
 
 export const GetGifURL = (gifid: string) => getURL(gifid + ".gif");
 
