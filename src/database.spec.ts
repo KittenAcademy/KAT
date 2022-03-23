@@ -4,8 +4,7 @@ import mongoose from "mongoose";
 let database: any;
 let dbServer: any;
 
-// flakey
-describe.skip("database tests", () => {
+describe("database tests", () => {
   beforeAll(async () => {
     dbServer = await MongoMemoryServer.create({ instance: { dbName: "kat" } });
     const uri = dbServer.getUri() + "kat";
@@ -22,6 +21,7 @@ describe.skip("database tests", () => {
   });
 
   beforeEach(async () => {
+    jest.setTimeout(15000);
     const collections = await mongoose.connection.db.collections();
     for (let collection of collections) {
       await collection.deleteMany({});
@@ -47,6 +47,32 @@ describe.skip("database tests", () => {
     const result = await database.DeleteGif("id1");
     expect(result).toBeTruthy();
     expect(await database.FindGif({ id: "id1" })).toBeFalsy();
+  });
+
+  test("should find gif by checksum", async () => {
+    const gif = {
+      id: "id1",
+      name: "my_file.gif",
+      tags: ["my", "file"],
+      checksum: "abc123"
+    };
+    await database.AddGif(gif);
+    const result = await database.FindGifByChecksum("abc123");
+    expect(result.toJSON()).toMatchObject(gif);
+  });
+
+  test("should update checksum", async () => {
+    const gif = {
+      id: "id1",
+      name: "my_file.gif",
+      tags: ["my", "file"],
+      checksum: "abc123"
+    };
+    await database.AddGif(gif);
+    await database.UpdateGifChecksum("id1", "def456");
+    const result = await database.FindGifByChecksum("def456");
+    expect(result.toJSON()).toMatchObject({ ...gif, checksum: "def456" });
+    expect(await database.FindGifByChecksum("abc123")).toBeFalsy();
   });
 
   test("should rename gif by name", async () => {

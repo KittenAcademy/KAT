@@ -1,5 +1,5 @@
 //https://console.developers.google.com/apis/credentials/consent?project=beaming-team-148423
-import googleAuth from "google-auth-library";
+import { OAuth2Client } from "google-auth-library";
 import { ParsedQs } from "qs";
 import { SetCache } from "../database";
 import setting, { settingsGoogle } from "../settings";
@@ -23,8 +23,7 @@ function GetOauth2Client(callback: {
   const clientSecret = credentials.installed.client_secret;
   const clientId = credentials.installed.client_id;
   const redirectUrl = credentials.installed.redirect_uris[0];
-  const auth = new (googleAuth as any)();
-  const oauth2Client = new auth.OAuth2(clientId, clientSecret, redirectUrl);
+  const oauth2Client = new OAuth2Client(clientId, clientSecret, redirectUrl);
   callback({ success: true, message: oauth2Client });
 }
 
