@@ -35,30 +35,9 @@ const filesToTags = (files: filesToTagsInterface[]) => {
   for (let i = 0; i < files.length; i++) {
     const file = files[i];
     if (!file.name) continue;
-    file.name = file.name.toLowerCase();
+    file.name = file.name.toLowerCase().replace(/ /g, "_");
     file.tags = getTagsFromFileName(file.name);
   }
-  return files;
-};
-
-export const listAllFiles = async () => {
-  const files = [] as drive_v3.Schema$FileList[];
-  let nextPageToken = null;
-  let page = 1;
-  do {
-    const fetchPageResult = await fetchPage(undefined, {
-      q: "mimeType = 'image/gif' and '0BwoBPbVKwbI9TUdFSG0yRjh5UTQ' in parents"
-    });
-    if (!fetchPageResult.files) return;
-    nextPageToken = fetchPageResult.nextPageToken;
-    files.push.apply(files, filesToTags(fetchPageResult.files));
-    files.push.apply(files, fetchPageResult.files);
-    page = page + 1;
-  } while (
-    // while (nextPageToken);
-    nextPageToken &&
-    page < 3
-  );
   return files;
 };
 
@@ -72,7 +51,7 @@ const fetchPage = async (
     auth: auth
   });
   return new Promise<drive_v3.Schema$FileList>((resolve) => {
-    query.fields = "nextPageToken, files(id, name)";
+    query.fields = "nextPageToken, files(id, name, md5Checksum)";
     query.spaces = "drive";
     query.pageToken = pageToken;
     // console.log("getting ", query, " from Google drive")

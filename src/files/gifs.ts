@@ -1,6 +1,11 @@
 import { getURL } from "../cloudFront/cloudFront";
 import { listRecentlyChangedFiles, nextPageToken } from "../drive/dal";
-import { FindGif, AddGif } from "../database";
+import {
+  FindGif,
+  FindGifByChecksum,
+  AddGif,
+  UpdateGifChecksum
+} from "../database";
 import { fileUploaded, uploadFromStream } from "../s3/s3";
 import drivestream from "../drive/returnstream";
 import driveauth from "../drive/driveauth";
@@ -10,15 +15,23 @@ export const GetGifURL = (gifid: string) => getURL(gifid + ".gif");
 export const updateNewGifs = async (nextPage?: nextPageToken) => {
   const recentlyChangedFiles = await listRecentlyChangedFiles(nextPage);
   if (!recentlyChangedFiles || !recentlyChangedFiles.files) return;
-  // let aFileWasFound;
+
   nextPage = recentlyChangedFiles.nextPageToken;
   for (let i = 0; i < recentlyChangedFiles.files.length; i++) {
-    const recentlyChangedFile = recentlyChangedFiles.files[i];
+    const recentlyChangedFile = recentlyChangedFiles.files[i] as any;
+    if (await FindGifByChecksum(recentlyChangedFile.md5Checksum)) continue;
+    let gif: any;
     if (
-      await FindGif({
+      (gif = await FindGif({
         id: recentlyChangedFile.id
-      })
+      }))
     ) {
+      if (!gif.checksum) {
+        await UpdateGifChecksum(
+          recentlyChangedFile.id,
+          recentlyChangedFile.md5Checksum
+        );
+      }
       fileUploaded(
         `${recentlyChangedFile.id}.gif`,
         async function (isUploaded: boolean) {
@@ -33,7 +46,8 @@ export const updateNewGifs = async (nextPage?: nextPageToken) => {
       await AddGif({
         id: recentlyChangedFile.id,
         name: recentlyChangedFile.name,
-        tags: []
+        tags: [],
+        checksum: recentlyChangedFile.md5Checksum
       });
     }
   }
