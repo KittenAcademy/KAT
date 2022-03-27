@@ -20,7 +20,8 @@ const GifsModel = mongoose.model(
   new mongoose.Schema({
     id: String,
     name: String,
-    tags: [String]
+    tags: [String],
+    checksum: String
   })
 );
 const GifCacheModel = mongoose.model(
@@ -111,13 +112,20 @@ export const FindGifsByNameRegex = async (regex: string): Promise<any[]> => {
   return query.find();
 };
 
-export const AddGif = async (file: { id: any; name: any; tags: any }) => {
+export const AddGif = async (file: {
+  id: any;
+  name: any;
+  tags: any;
+  checksum: string;
+}) => {
   let gif = new GifsModel();
   gif.id = file.id;
   // @ts-ignore
   gif.name = file.name;
   // @ts-ignore
   gif.tags = file.tags;
+  // @ts-ignore
+  gif.checksum = file.checksum;
   return gif.save();
 };
 
@@ -142,6 +150,30 @@ export const RenameGif = async (oldName: any, newName: any) => {
   // Prioritize gifs with a matching name over gifs with a matching id, in case a file name is a duplicate of some id.
   return (
     (await query({ name: oldName })) || ((await query({ id: oldName })) as any)
+  );
+};
+
+export const FindGifByChecksum = async (checksum: string) => {
+  if (!checksum) throw "Checksum missing!";
+  return await GifsModel.where({
+    checksum
+  }).findOne();
+};
+
+export const UpdateGifChecksum = async (id: string, checksum: string) => {
+  if (!checksum) throw "Checksum missing!";
+  // @ts-ignore
+  return await GifsModel.findOneAndUpdate(
+    { id: id },
+    {
+      $set: {
+        checksum: checksum
+      }
+    },
+    {
+      useFindAndModify: false,
+      new: true
+    }
   );
 };
 
