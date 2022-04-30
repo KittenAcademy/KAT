@@ -7,7 +7,7 @@ import express from "express";
 import http from "http";
 import { GetAuthURL, UseCode } from "./drive/auth";
 import randomgif from "./drive/randomgif";
-import { FindGifsByTag, init } from "./database";
+import { BackfillTags, FindGifsByTag, init } from "./database";
 import { connectToDiscord } from "./discord/bot";
 import { pollForGifsInDrive } from "./files/gifs";
 
@@ -43,7 +43,8 @@ const callback = function () {
   console.log("Server listening at", `${hostname}:${port}`);
 };
 
-init.then(() => {
+init.then(async () => {
+  await BackfillTags();
   server.listen(port as number, hostname, backlog, callback);
   pollForGifsInDrive();
   connectToDiscord();

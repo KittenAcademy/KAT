@@ -312,3 +312,22 @@ export const DeleteCache = function (
     }
   );
 };
+
+export const BackfillTags = async (): Promise<void> => {
+  const gifsWithoutTags: any[] = await GifsModel.find({ tags: [] });
+  for (const gif of gifsWithoutTags) {
+    const tags = getTagsFromFileName(gif.name);
+    if (tags.length) {
+      await GifsModel.updateOne(
+        {
+          id: gif.id
+        },
+        {
+          $set: {
+            tags
+          }
+        }
+      );
+    }
+  }
+};
