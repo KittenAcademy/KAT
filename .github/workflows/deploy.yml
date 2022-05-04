@@ -38,6 +38,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Set up private settings example
+        run: mv ./src/privatesettings.ts.example.txt ./src/privatesettings.ts
+
       - name: Build
         run: npm run build
         
