@@ -29,8 +29,8 @@ describe("database tests", () => {
   });
 
   afterAll(async () => {
-    await dbServer.stop();
     await mongoose.connection.close();
+    await dbServer.stop();
   });
 
   test("should add and find gif", async () => {
