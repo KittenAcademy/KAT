@@ -46,7 +46,7 @@ export const updateNewGifs = async (nextPage?: nextPageToken) => {
       await AddGif({
         id: recentlyChangedFile.id,
         name: recentlyChangedFile.name,
-        tags: [],
+        tags: recentlyChangedFile.tags,
         checksum: recentlyChangedFile.md5Checksum
       });
     }
