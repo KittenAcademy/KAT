@@ -5,9 +5,12 @@ name: Deploy
 # Controls when the workflow will run
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
-  push:
-    branches: [ master ]
+#   push:
+#     branches: [ master ]
 
+  pull_request:
+    branches: [master]
+    
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -54,17 +57,32 @@ jobs:
           replace-with: '-'
           flags: 'g'
 
-      - name: Beanstalk Deploy
-        # uses: einaregilsson/beanstalk-deploy@6f594ded1b0a22c5e5aa1088e7c58dc5816c92ea
-        uses: einaregilsson/beanstalk-deploy@v20
+      - name: Add client_id
+        uses: jossef/action-set-json-field@v1
         with:
-          aws_access_key: ${{secrets.AWS_ACCESS_KEY}}
-          aws_secret_key: ${{secrets.AWS_SECRET_KEY}}
-          region: 'us-west-2'
-          application_name: 'Kitten Academy'
-          environment_name: 'Kittenacademy-env'
-          version_label: "github-actions-${{ steps.format-time.outputs.replaced }}"
-          deployment_package: 'deploy.zip'
+          file: ./src/privatesettings.ts
+          field: client_id
+          value: ${{secrets.client_id}}
+          
+      - name: Add dbuser
+        uses: jossef/action-set-json-field@v1
+        with:
+          file: ./src/privatesettings.ts
+          field: dbuser
+          value: ${{secrets.dbuser}}
+
+# uncomment before merge
+#       - name: Beanstalk Deploy
+#         # uses: einaregilsson/beanstalk-deploy@6f594ded1b0a22c5e5aa1088e7c58dc5816c92ea
+#         uses: einaregilsson/beanstalk-deploy@v20
+#         with:
+#           aws_access_key: ${{secrets.AWS_ACCESS_KEY}}
+#           aws_secret_key: ${{secrets.AWS_SECRET_KEY}}
+#           region: 'us-west-2'
+#           application_name: 'Kitten Academy'
+#           environment_name: 'Kittenacademy-env'
+#           version_label: "github-actions-${{ steps.format-time.outputs.replaced }}"
+#           deployment_package: 'deploy.zip'
 
       - name: Deployed!
         run: echo App deployed to ELB
