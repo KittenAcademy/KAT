@@ -1,29 +1,32 @@
 // HELP: https://www.npmjs.com/package/mongoose
 
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 import setting from "./settings";
 import { getTagsFromFileName } from "./drive/dal";
 import { ParsedQs } from "qs";
-let dbuser = setting("dbuser");
-let dbpass = setting("dbpass");
-let dbinstance = setting("dbinstance");
-let dbconnection = setting("dbconnection");
+import { IGif, IScoredGif } from "./types";
+const dbuser = setting("dbuser");
+const dbpass = setting("dbpass");
+const dbinstance = setting("dbinstance");
+const dbconnection = setting("dbconnection");
 if ((!dbpass || !dbuser || !dbinstance) && !dbconnection) {
   throw "DB SETTINGS NOT CONFIGURED";
 }
-let connectString =
+const connectString =
   dbconnection ||
   `mongodb+srv://${dbuser}:${dbpass}@kat.pdpvx.mongodb.net/${dbinstance}?retryWrites=true&w=majority`;
 export const init = mongoose.connect(connectString);
+
 const GifsModel = mongoose.model(
   "gifs",
-  new mongoose.Schema({
-    id: String,
-    name: String,
-    tags: [String],
-    checksum: String
+  new mongoose.Schema<IGif>({
+    id: { type: String, required: true },
+    name: { type: String, required: true },
+    tags: { type: [String], required: true },
+    checksum: { type: String }
   })
 );
+
 const GifCacheModel = mongoose.model(
   "gifcache",
   new mongoose.Schema({
@@ -33,14 +36,7 @@ const GifCacheModel = mongoose.model(
   })
 );
 
-export const SearchForGif = (name: string | RegExp) => {
-  return GifsModel.aggregate([
-    { $match: { name: new RegExp(name, "i") } },
-    { $sample: { size: 1 } }
-  ]).exec();
-};
-
-export const RandomGif = () => {
+export const RandomGif = (): Promise<IGif> => {
   return new Promise((resolve, reject) => {
     GifsModel.aggregate([{ $sample: { size: 1 } }]).exec((err, result) => {
       if (err) {
@@ -60,22 +56,19 @@ export const RandomGif = () => {
   }) as any;
 };
 
-export const FindGifsByTag = async (tag: string) => {
+export const FindGifsByTag = async (tag: string): Promise<IGif[]> => {
   // @ts-ignore
   const query = GifsModel.where({
     tags: tag
   });
   return query.find();
 };
-export interface FindGifByTagsInterface {
-  id: number;
-  name: string;
-  score: number;
-}
-export const FindGifByTags = async (tagsArray: string[]) => {
+
+export const FindGifByTags = async (
+  tagsArray: string[]
+): Promise<IScoredGif[]> => {
   console.log("looking for", tagsArray);
-  // @ts-ignore
-  var retval = await GifsModel.aggregate()
+  return await GifsModel.aggregate<IScoredGif>()
     .search({
       index: "kat-gifs",
       text: {
@@ -88,13 +81,13 @@ export const FindGifByTags = async (tagsArray: string[]) => {
     .project({
       id: 1,
       name: 1,
+      tags: 1,
       score: { $meta: "searchScore" }
     })
     .limit(10);
-  return retval as FindGifByTagsInterface[];
 };
 
-export const FindGif = async (file: { id: any }) => {
+export const FindGif = async (file: { id: string }): Promise<IGif> => {
   // @ts-ignore
   const query = GifsModel.where({
     id: file.id
@@ -102,7 +95,7 @@ export const FindGif = async (file: { id: any }) => {
   return query.findOne();
 };
 
-export const FindGifsByNameRegex = async (regex: string): Promise<any[]> => {
+export const FindGifsByNameRegex = async (regex: string): Promise<IGif[]> => {
   // @ts-ignore
   const query = GifsModel.where({
     name: {
@@ -112,28 +105,21 @@ export const FindGifsByNameRegex = async (regex: string): Promise<any[]> => {
   return query.find();
 };
 
-export const AddGif = async (file: {
-  id: any;
-  name: any;
-  tags: any;
-  checksum: string;
-}) => {
-  let gif = new GifsModel();
+export const AddGif = async (file: IGif) => {
+  const gif = new GifsModel();
   gif.id = file.id;
-  // @ts-ignore
   gif.name = file.name;
-  // @ts-ignore
   gif.tags = file.tags;
-  // @ts-ignore
   gif.checksum = file.checksum;
   return gif.save();
 };
 
-export const RenameGif = async (oldName: any, newName: any) => {
+export const RenameGif = async (
+  oldName: string,
+  newName: string
+): Promise<IGif> => {
   const newTags = getTagsFromFileName(newName);
-  const query = (
-    condition: mongoose.FilterQuery<mongoose.Document<any>> | undefined
-  ) =>
+  const query = (condition: mongoose.FilterQuery<IGif>): Promise<IGif> =>
     GifsModel.findOneAndUpdate(
       condition,
       {
@@ -148,19 +134,20 @@ export const RenameGif = async (oldName: any, newName: any) => {
       }
     );
   // Prioritize gifs with a matching name over gifs with a matching id, in case a file name is a duplicate of some id.
-  return (
-    (await query({ name: oldName })) || ((await query({ id: oldName })) as any)
-  );
+  return (await query({ name: oldName })) || (await query({ id: oldName }));
 };
 
-export const FindGifByChecksum = async (checksum: string) => {
+export const FindGifByChecksum = async (checksum: string): Promise<IGif> => {
   if (!checksum) throw "Checksum missing!";
   return await GifsModel.where({
     checksum
   }).findOne();
 };
 
-export const UpdateGifChecksum = async (id: string, checksum: string) => {
+export const UpdateGifChecksum = async (
+  id: string,
+  checksum: string
+): Promise<IGif> => {
   if (!checksum) throw "Checksum missing!";
   // @ts-ignore
   return await GifsModel.findOneAndUpdate(
@@ -311,23 +298,4 @@ export const DeleteCache = function (
       return;
     }
   );
-};
-
-export const BackfillTags = async (): Promise<void> => {
-  const gifsWithoutTags: any[] = await GifsModel.find({ tags: [] });
-  for (const gif of gifsWithoutTags) {
-    const tags = getTagsFromFileName(gif.name);
-    if (tags.length) {
-      await GifsModel.updateOne(
-        {
-          id: gif.id
-        },
-        {
-          $set: {
-            tags
-          }
-        }
-      );
-    }
-  }
 };

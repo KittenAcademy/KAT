@@ -1,8 +1,11 @@
 import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
+import { IGif } from "./types";
 
-let database: any;
-let dbServer: any;
+type ModuleType = typeof import("./database");
+
+let database: ModuleType;
+let dbServer: MongoMemoryServer;
 
 describe("database tests", () => {
   beforeAll(async () => {
@@ -23,7 +26,7 @@ describe("database tests", () => {
   beforeEach(async () => {
     jest.setTimeout(15000);
     const collections = await mongoose.connection.db.collections();
-    for (let collection of collections) {
+    for (const collection of collections) {
       await collection.deleteMany({});
     }
   });
@@ -37,7 +40,7 @@ describe("database tests", () => {
     const gif = { id: "id1", name: "my_file.gif", tags: ["my", "file"] };
     await database.AddGif(gif);
     const result = await database.FindGif({ id: "id1" });
-    expect(result.toJSON()).toMatchObject(gif);
+    expect(toJson(result)).toMatchObject(gif);
   });
 
   test("should delete gif", async () => {
@@ -58,7 +61,7 @@ describe("database tests", () => {
     };
     await database.AddGif(gif);
     const result = await database.FindGifByChecksum("abc123");
-    expect(result.toJSON()).toMatchObject(gif);
+    expect(toJson(result)).toMatchObject(gif);
   });
 
   test("should update checksum", async () => {
@@ -71,7 +74,7 @@ describe("database tests", () => {
     await database.AddGif(gif);
     await database.UpdateGifChecksum("id1", "def456");
     const result = await database.FindGifByChecksum("def456");
-    expect(result.toJSON()).toMatchObject({ ...gif, checksum: "def456" });
+    expect(toJson(result)).toMatchObject({ ...gif, checksum: "def456" });
     expect(await database.FindGifByChecksum("abc123")).toBeFalsy();
   });
 
@@ -90,7 +93,7 @@ describe("database tests", () => {
       "the_new_awesome_file.gif"
     );
 
-    expect(result.toJSON()).toMatchObject({
+    expect(toJson(result)).toMatchObject({
       id: "id1",
       name: "the_new_awesome_file.gif",
       tags: ["the", "new", "awesome", "file"]
@@ -98,7 +101,7 @@ describe("database tests", () => {
     expect(await database.FindGif({ id: "id1" })).toEqual(result);
 
     const unchangedResult = await database.FindGif({ id: "my_file.gif" });
-    expect(unchangedResult.toJSON()).toMatchObject(gifWithWeirdId);
+    expect(toJson(unchangedResult)).toMatchObject(gifWithWeirdId);
   });
 
   test("should rename gif by id", async () => {
@@ -107,7 +110,7 @@ describe("database tests", () => {
 
     const result = await database.RenameGif("id1", "the_new_awesome_file.gif");
 
-    expect(result.toJSON()).toMatchObject({
+    expect(toJson(result)).toMatchObject({
       id: "id1",
       name: "the_new_awesome_file.gif",
       tags: ["the", "new", "awesome", "file"]
@@ -129,9 +132,9 @@ describe("database tests", () => {
       [...matchingGifs, ...nonMatchingGifs].map(database.AddGif)
     );
 
-    const result: [any] = await database.FindGifsByTag("file");
+    const result = await database.FindGifsByTag("file");
 
-    expect(new Set(result.map((gif) => gif.toObject()))).toEqual(
+    expect(toJsonSet(result)).toEqual(
       new Set(matchingGifs.map(expect.objectContaining))
     );
   });
@@ -152,7 +155,7 @@ describe("database tests", () => {
 
     const result = await database.FindGifsByNameRegex("_ab*cd");
 
-    expect(new Set(result.map((gif: any) => gif.toObject()))).toEqual(
+    expect(toJsonSet(result)).toEqual(
       new Set(matchingGifs.map(expect.objectContaining))
     );
   });
@@ -176,17 +179,17 @@ describe("database tests", () => {
     const result = await database.BulkRenameGifs(renames);
 
     expect(result).toEqual(2);
-    expect((await database.FindGif({ id: "id1" })).toJSON()).toMatchObject({
+    expect(toJson(await database.FindGif({ id: "id1" }))).toMatchObject({
       id: "id1",
       name: "new_meme.gif",
       tags: ["new", "meme"]
     });
-    expect((await database.FindGif({ id: "id2" })).toJSON()).toMatchObject({
+    expect(toJson(await database.FindGif({ id: "id2" }))).toMatchObject({
       id: "id2",
       name: "cool_video.gif",
       tags: ["cool", "video"]
     });
-    expect((await database.FindGif({ id: "id3" })).toJSON()).toMatchObject(
+    expect(toJson(await database.FindGif({ id: "id3" }))).toMatchObject(
       gifs[2]
     );
   });
@@ -228,3 +231,12 @@ describe("database tests", () => {
     );
   });
 });
+
+const toJson = (dbGif: IGif): IGif => ({
+  id: dbGif.id,
+  name: dbGif.name,
+  tags: [...dbGif.tags],
+  checksum: dbGif.checksum
+});
+
+const toJsonSet = (dbGifs: IGif[]): Set<IGif> => new Set(dbGifs.map(toJson));
