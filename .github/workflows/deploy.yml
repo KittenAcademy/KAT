@@ -32,7 +32,7 @@ jobs:
         run: npm ci
 
       - name: Set up private settings template
-        run: mv ./github/workflows/privatesettings.prod.json ./src/privatesettings.json
+        run: mv ./.github/workflows/privatesettings.prod.json ./src/privatesettings.json
 
       - name: Replace private settings contents with secrets
         uses: microsoft/variable-substitution@v1
