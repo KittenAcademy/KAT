@@ -2,5 +2,6 @@
 /node_modules
 src/privatesettings.js
 src/privatesettings.ts
+src/privatesettings.json
 *.zip
 /dist

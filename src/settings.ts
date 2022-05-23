@@ -1,4 +1,6 @@
-import privatesettings from "./privatesettings";
+import _privatesettings from "./privatesettings.json";
+
+const privatesettings: settings = _privatesettings;
 
 export default function (settingName: keyof settings) {
   let retval = process.env[settingName];

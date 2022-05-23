@@ -1,0 +1,38 @@
+{
+	"ClientSecret": {
+		"installed": {
+			"client_id": "placeholder for CLIENT_ID",
+			"project_id": "beaming-team-148423",
+			"auth_uri": "https://accounts.google.com/o/oauth2/auth",
+			"token_uri": "https://accounts.google.com/o/oauth2/token",
+			"auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+			"client_secret": "placeholder for CLIENT_SECRET",
+			"redirect_uris": [
+				"urn:ietf:wg:oauth:2.0:oob",
+				"http://localhost"
+			]
+		}
+	},
+	"dbinstance": "kat",
+	"dbpass": "placeholder for DBPASS",
+	"dbuser": "placeholder for DBUSER",
+	"DiscordToken": "placeholder for DISCORD_TOKEN",
+	"S3_BUCKET": "kittenacademy",
+	"AWS_ACCESS_KEY_ID": "placeholder for S3_AWS_ACCESS_KEY_ID",
+	"AWS_SECRET_ACCESS_KEY": "placeholder for S3_AWS_SECRET_ACCESS_KEY",
+	"GooleAPIKey": "placeholder for GOOLE_API_KEY",
+	"CommandAllowlist": {
+		"bulkrenamegifs": [
+			"328194320601710593"
+		],
+		"bulkfindgifs": [
+			"328194320601710593"
+		],
+		"deletegif": [
+			"328194320601710593"
+		],
+		"renamegif": [
+			"328194320601710593"
+		]
+	}
+}

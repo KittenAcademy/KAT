@@ -8,7 +8,7 @@ describe("database tests", () => {
   beforeAll(async () => {
     dbServer = await MongoMemoryServer.create({ instance: { dbName: "kat" } });
     const uri = dbServer.getUri() + "kat";
-    jest.doMock("./privatesettings", () => ({
+    jest.doMock("./privatesettings.json", () => ({
       __esModule: true,
       default: { dbconnection: uri }
     }));
