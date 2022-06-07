@@ -1,18 +1,18 @@
-import { FindGifByTagsInterface } from "../database";
-import { pickSomethingAtRandom } from "./findFileHelpers";
+import { pickFileFromArray } from "./findFileHelpers";
 
-describe("pickSomethingAtRandom", () => {
+describe("pickFileFromArray", () => {
   test("test", () => {
     // arrange
-    const expected: FindGifByTagsInterface = {
-      id: 1,
+    const expected = {
+      id: "1",
       name: "test",
-      score: 1
+      score: 1,
+      tags: []
     };
-    const filesArray: FindGifByTagsInterface[] = [expected];
+    const filesArray = [expected];
 
     // act
-    const actual = pickSomethingAtRandom(filesArray);
+    const actual = pickFileFromArray(filesArray);
 
     // assert
     expect(actual).toEqual(expected);
