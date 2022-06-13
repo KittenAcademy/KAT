@@ -52,6 +52,39 @@ describe("database tests", () => {
     expect(await database.FindGif({ id: "id1" })).toBeFalsy();
   });
 
+  test("should find gifs by exact tags", async () => {
+    const gif1 = {
+      id: "id1",
+      name: "my_file.gif",
+      tags: ["my", "file"],
+      checksum: "abc123"
+    };
+    const gif2 = {
+      id: "id2",
+      name: "my_file_also.gif",
+      tags: ["my", "file", "also"],
+      checksum: "abc456"
+    };
+    const gif3 = {
+      id: "id3",
+      name: "mine_file.gif",
+      tags: ["mine", "file"],
+      checksum: "abc789"
+    };
+    await Promise.all([gif1, gif2, gif3].map(database.AddGif));
+
+    const result = await database.FindGifByTags(["my", "file"]);
+
+    expect(new Set(result)).toEqual(
+      new Set(
+        [
+          { ...gif1, score: 1 },
+          { ...gif2, score: 1 }
+        ].map(expect.objectContaining)
+      )
+    );
+  });
+
   test("should find gif by checksum", async () => {
     const gif = {
       id: "id1",

@@ -68,6 +68,17 @@ export const FindGifByTags = async (
   tagsArray: string[]
 ): Promise<IScoredGif[]> => {
   console.log("looking for", tagsArray);
+  // Find all gifs with an exact match for every tag.
+  const exactMatches: IGif[] = await GifsModel.find({
+    tags: { $all: tagsArray }
+  }).lean();
+  if (exactMatches.length) {
+    return exactMatches.map((gif) => ({
+      ...gif,
+      score: 1
+    }));
+  }
+
   return await GifsModel.aggregate<IScoredGif>()
     .search({
       index: "kat-gifs",
