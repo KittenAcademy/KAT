@@ -102,7 +102,11 @@ const HandleBotCommand = async (
 ) => {
   if (payload.moduleName == "allgifs") {
     await payload.discordMessage.reply(
-      `Here you go ${payload.user} these are all my gifs for ${payload.command} http://gifs.kitten.academy/tags.html?tag=${payload.command}`
+      `Here you go ${payload.user} these are all my gifs for ${
+        payload.command
+      } http://gifs.kitten.academy/tags.html?tag=${encodeURIComponent(
+        payload.command
+      )}`
     );
   } else if (payload.moduleName == "livestreams") {
     const url =

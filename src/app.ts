@@ -7,7 +7,7 @@ import express from "express";
 import http from "http";
 import { GetAuthURL, UseCode } from "./drive/auth";
 import randomgif from "./drive/randomgif";
-import { FindGifsByTag, init } from "./database";
+import { FindGifsByExactTags, init } from "./database";
 import { connectToDiscord } from "./discord/bot";
 import { pollForGifsInDrive } from "./files/gifs";
 
@@ -28,7 +28,9 @@ app.get("/getgifids", function (req, res) {
   res.json(randomgif());
 });
 app.get("/tags", async (req, res) => {
-  const files = await FindGifsByTag(req.query.text as string);
+  const files = await FindGifsByExactTags(
+    (req.query.text as string).split(" ")
+  );
   res.json(files);
 });
 app.use("/", express.static(__dirname + "/../client"));
