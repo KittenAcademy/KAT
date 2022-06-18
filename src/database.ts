@@ -64,14 +64,20 @@ export const FindGifsByTag = async (tag: string): Promise<IGif[]> => {
   return query.find();
 };
 
+export const FindGifsByExactTags = async (
+  tagsArray: string[]
+): Promise<IGif[]> => {
+  return await GifsModel.find({
+    tags: { $all: tagsArray }
+  }).lean();
+};
+
 export const FindGifByTags = async (
   tagsArray: string[]
 ): Promise<IScoredGif[]> => {
   console.log("looking for", tagsArray);
   // Find all gifs with an exact match for every tag.
-  const exactMatches: IGif[] = await GifsModel.find({
-    tags: { $all: tagsArray }
-  }).lean();
+  const exactMatches = await FindGifsByExactTags(tagsArray);
   if (exactMatches.length) {
     return exactMatches.map((gif) => ({
       ...gif,
