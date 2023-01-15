@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+</head>
+
+<body>
+	<div id="state"></div>
+	<script type="module">
+		import { downloadZip } from "https://cdn.jsdelivr.net/npm/client-zip@2.3.0/index.min.js"
+		const chunkSize = 50;
+		function GetQueryStringParams(sParam) {
+			var sPageURL = window.location.search.substring(1);
+			var sURLVariables = sPageURL.split('&');
+			for (var i = 0; i < sURLVariables.length; i++) {
+				var sParameterName = sURLVariables[i].split('=');
+				if (sParameterName[0] == sParam) {
+					return sParameterName[1];
+				}
+			}
+		}
+
+		async function fetchGif(url) {
+			const response = await fetch(url);
+			return response.arrayBuffer();
+		}
+
+		var chunks = [];
+		var key;
+		var container;
+
+		async function init() {
+			key = GetQueryStringParams('key');
+			container = document.getElementById("state");
+			renderState();
+			const data = await fetch("/bulkdownload/?key=" + key).then(x => x.json());
+			for (let i = 0; i < data.length; i += chunkSize) {
+				const chunk = {
+					data: data.slice(i, i + chunkSize),
+					prepare: true
+				}
+				chunks.push(chunk);
+			}
+			renderState();
+			window.prepareChunk = prepareChunk;
+			window.downloadChunk = downloadChunk;
+		}
+
+		async function prepareChunk(chunk) {
+			chunks[chunk].prepare = false;
+			chunks[chunk].files = [];
+			const data = chunks[chunk].data;
+			for (let i = 0; i < data.length; i++) {
+				chunks[chunk].status = `Downloading gif ${i + 1}/${data.length}`;
+				renderState();
+				let gif = await fetchGif(data[i].url);
+				chunks[chunk].files.push({ name: data[i].filename, input: gif });
+			}
+			chunks[chunk].status = `Generating zip`;
+			renderState();
+			const blob = await downloadZip(
+				chunks[chunk].files
+			).blob()
+			chunks[chunk].blob = blob;
+			chunks[chunk].files = null;
+			renderState();
+		}
+
+		function downloadChunk(chunk) {
+			const link = document.createElement("a")
+			link.href = URL.createObjectURL(chunks[chunk].blob);
+			link.download = `${key}_${chunk}.zip`;
+			link.click()
+			chunks[chunk].blob = null;
+			chunks[chunk].done = true;
+			renderState();
+		}
+
+		function renderState() {
+			if (!chunks.length) {
+				container.innerHTML = 'loading data';
+				return;
+			}
+			let content = "";
+			for (let i = 0; i < chunks.length; i++) {
+				content += `Chunk ${i}: `;
+				const chunk = chunks[i];
+				if (chunk.done) content += 'done';
+				else if (chunk.blob) content += `<a href = "javascript:downloadChunk(${i})">download</a>`;
+				else if (chunk.prepare) content += `<a href="javascript:prepareChunk(${i})">prepare</a>`;
+				else content += `foo ${chunk.status}`;
+				content += "</br></br>";
+			}
+			container.innerHTML = content;
+		}
+
+		try {
+			await init();
+		} catch (e) {
+			container.innerText = "Initialization failed (is your key still valid?):" + e.toString();
+		}
+	</script>
+</body>
+
+</html>

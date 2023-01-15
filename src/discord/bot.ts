@@ -13,11 +13,13 @@ import catfacts from "./module/catfacts";
 import {
   generateGifsCsvAttachment,
   generateRenameGifsCsvAttachment,
-  parseBulkRenameAttachment
+  parseBulkRenameAttachment,
+  parseCsvToRows
 } from "./csv";
 import jokes from "./module/jokes";
 import https from "https";
 import { deleteFile } from "../s3/s3";
+import { addEntry } from "../files/bulkdownload";
 const client = new Discord.Client({
   restRequestTimeout: 60000,
   intents: [
@@ -269,6 +271,18 @@ const HandleBotCommand = async (
       content: `Found ${gifs.length} gif(s) matching \`${payload.command}\``,
       files: [attachment]
     });
+  } else if (payload.moduleName == "bulkdownload") {
+    if (!payload.attachments.length) {
+      await payload.discordMessage.reply(
+        "Usage: `!bulkdownload [with a two column csv attachment, consisting of ids and names]"
+      );
+      return;
+    }
+    const rows = await parseCsvToRows(payload.attachments[0]);
+    const key = addEntry(rows);
+    await payload.discordMessage.reply(
+      setting("ClientUrl") + "/download.html?key=" + key
+    );
   } else if (payload.moduleName == "deletegif") {
     const id = payload.command;
     if (!id) {
