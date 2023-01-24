@@ -33,6 +33,10 @@
 		],
 		"renamegif": [
 			""
-		]
-	}
+		],
+		"bulkdownload": [
+			""
+		],
+	},
+	"ClientUrl": "http://gifs.kitten.academy"
 }

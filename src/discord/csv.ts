@@ -13,11 +13,7 @@ interface GifRename {
 export const parseBulkRenameAttachment = async (
   messageAttachment: MessageAttachment
 ) => {
-  if (messageAttachment.size > 100 * 1024) throw "File too big";
-  const response = await fetch(messageAttachment.url);
-  if (!response.ok) throw "Failed to load attachment";
-  const text = await response.text();
-  const rows = csvParse(text, { relaxColumnCount: true });
+  const rows = await parseCsvToRows(messageAttachment);
   const renames = rows.map(parseRow);
   const findDuplicate = (a: string[]) =>
     [...a].sort().find((elem, i, arr) => arr[i + 1] === elem);
@@ -34,6 +30,16 @@ export const parseBulkRenameAttachment = async (
     throw `A new name and an old name match: \`${duplicate}\``;
   }
   return renames;
+};
+
+export const parseCsvToRows = async (
+  messageAttachment: MessageAttachment
+): Promise<string[][]> => {
+  if (messageAttachment.size > 100 * 1024) throw "File too big";
+  const response = await fetch(messageAttachment.url);
+  if (!response.ok) throw "Failed to load attachment";
+  const text = await response.text();
+  return csvParse(text, { relaxColumnCount: true });
 };
 
 const parseRow = (row: string[], index: number): GifRename => {

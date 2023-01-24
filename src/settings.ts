@@ -39,7 +39,9 @@ export interface settings {
     bulkfindgifs: string[];
     deletegif: string[];
     renamegif: string[];
+    bulkdownload: string[];
   };
+  ClientUrl: string;
 }
 export interface settingsGoogle {
   installed: {
