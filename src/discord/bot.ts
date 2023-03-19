@@ -20,6 +20,7 @@ import jokes from "./module/jokes";
 import https from "https";
 import { deleteFile } from "../s3/s3";
 import { addEntry } from "../files/bulkdownload";
+import { optimize, shouldOptimize } from "../files/optimizer";
 const client = new Discord.Client({
   restRequestTimeout: 60000,
   intents: [
@@ -154,6 +155,25 @@ const HandleBotCommand = async (
       return;
     }
     try {
+      if (payload.channelID && shouldOptimize()) {
+        const optimized = await optimize(file.id);
+        if (optimized) {
+          const attachment = new Discord.MessageAttachment(
+            Buffer.from(optimized),
+            file.name
+          );
+          const options: Discord.MessageOptions = {
+            content: `I found \`${file.name}\` for you`,
+            files: [attachment]
+          };
+          await payload.discordMessage.reply(options);
+          return;
+        }
+      }
+    } catch (ex) {
+      console.error("Failed while optimizing a !gif", ex);
+    }
+    try {
       const attachment = new Discord.MessageAttachment(file.path, file.name);
       attachment.url = file.path;
       const options: Discord.MessageOptions = {
@@ -196,6 +216,30 @@ const HandleBotCommand = async (
       .setTimestamp()
       .setURL(file.path);
     await payload.discordMessage.reply({ embeds: [embed], files: [file.path] });
+  } else if (payload.moduleName === "optimize") {
+    const file = await findfile(payload.command);
+    if (!file || !file.path) {
+      await payload.discordMessage.reply("Gif not found");
+      return;
+    }
+    const optimized = await optimize(file.id);
+    if (!optimized) {
+      await payload.discordMessage.reply("Failed to optimize, check logs");
+      return;
+    }
+    try {
+      const attachment = new Discord.MessageAttachment(
+        Buffer.from(optimized),
+        file.name
+      );
+      const options: Discord.MessageOptions = {
+        content: `Optimized \`${file.name}\` for you`,
+        files: [attachment]
+      };
+      await payload.discordMessage.reply(options);
+    } catch (e) {
+      console.error(`Tried to share optimized ${file.name} but failed: ${e}`);
+    }
   } else if (payload.moduleName == "renamegif") {
     const [oldName, newName] = payload.command.split(" ");
     if (!(newName || "").endsWith(".gif")) {
