@@ -2,7 +2,7 @@ import _privatesettings from "./privatesettings.json";
 
 const privatesettings: settings = _privatesettings;
 
-export default function (settingName: keyof settings) {
+export default function (settingName: keyof settings): any {
   let retval = process.env[settingName];
   if (!retval) {
     try {
@@ -34,12 +34,14 @@ export interface settings {
   AWS_ACCESS_KEY_ID: string;
   AWS_SECRET_ACCESS_KEY: string;
   GooleAPIKey: string;
+  OptimizerConf?: OptimizerConf | null | string;
   CommandAllowlist: {
     bulkrenamegifs: string[];
     bulkfindgifs: string[];
     deletegif: string[];
     renamegif: string[];
     bulkdownload: string[];
+    optimize: string[];
   };
   ClientUrl: string;
 }
@@ -53,4 +55,13 @@ export interface settingsGoogle {
     client_secret: string;
     redirect_uris: string[];
   };
+}
+
+export interface OptimizerConf {
+  url: string;
+  startMillis: number;
+  endMillis: number;
+  cooldownMillis: number;
+  frequency: number;
+  deadlineMillis: number;
 }

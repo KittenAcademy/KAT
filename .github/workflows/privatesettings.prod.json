@@ -36,7 +36,11 @@
 		],
 		"bulkdownload": [
 			"328194320601710593"
+		],
+		"optimize": [
+			"328194320601710593"
 		]
 	},
-	"ClientUrl": "http://gifs.kitten.academy"
+	"ClientUrl": "http://gifs.kitten.academy",
+	"OptimizerConf": null
 }
