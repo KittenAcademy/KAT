@@ -44,6 +44,7 @@ export interface settings {
     optimize: string[];
   };
   ClientUrl: string;
+  MaxGifSize: number;
 }
 export interface settingsGoogle {
   installed: {

@@ -9,6 +9,7 @@ import {
 import { fileUploaded, uploadFromStream } from "../s3/s3";
 import drivestream from "../drive/returnstream";
 import driveauth from "../drive/driveauth";
+import setting from "../settings";
 
 export const GetGifURL = (gifid: string) => getURL(gifid + ".gif");
 
@@ -19,6 +20,12 @@ export const updateNewGifs = async (nextPage?: nextPageToken) => {
   nextPage = recentlyChangedFiles.nextPageToken;
   for (let i = 0; i < recentlyChangedFiles.files.length; i++) {
     const recentlyChangedFile = recentlyChangedFiles.files[i] as any;
+    if (recentlyChangedFile.size! > setting("MaxGifSize")) {
+      console.log(
+        `${recentlyChangedFile.id}/${recentlyChangedFile.name} is too big (${recentlyChangedFile.size})- skipping`
+      );
+      continue;
+    }
     if (await FindGifByChecksum(recentlyChangedFile.md5Checksum)) continue;
     let gif: any;
     if (

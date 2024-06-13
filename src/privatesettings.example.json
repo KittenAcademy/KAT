@@ -42,5 +42,6 @@
 		]
 	},
 	"ClientUrl": "http://gifs.kitten.academy",
-	"OptimizerConf": null
+	"OptimizerConf": null,
+	"MaxGifSize": 30000000
 }

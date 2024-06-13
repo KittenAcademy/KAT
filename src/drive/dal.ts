@@ -51,7 +51,7 @@ const fetchPage = async (
     auth: auth
   });
   return new Promise<drive_v3.Schema$FileList>((resolve) => {
-    query.fields = "nextPageToken, files(id, name, md5Checksum)";
+    query.fields = "nextPageToken, files(id, name, md5Checksum, size)";
     query.spaces = "drive";
     query.pageToken = pageToken;
     // console.log("getting ", query, " from Google drive")
