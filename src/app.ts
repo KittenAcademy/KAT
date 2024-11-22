@@ -30,7 +30,7 @@ app.get("/getgifids", function (req, res) {
 });
 app.get("/tags", async (req, res) => {
   const files = await FindGifsByExactTags(
-    (req.query.text as string).split(" ")
+    (req.query.text as string).split(" ").map((tag) => tag.toLowerCase())
   );
   res.json(files);
 });
