@@ -7,7 +7,7 @@ import express from "express";
 import http from "http";
 import { GetAuthURL, UseCode } from "./drive/auth";
 import randomgif from "./drive/randomgif";
-import { FindGifsByExactTags, init } from "./database";
+import { FindGifsByExactTags, init, PatchLegacyGifs } from "./database";
 import { connectToDiscord } from "./discord/bot";
 import { pollForGifsInDrive } from "./files/gifs";
 import { getEntry } from "./files/bulkdownload";
@@ -38,10 +38,6 @@ app.get("/bulkdownload", function (req, res) {
   res.json(getEntry(req.query.key as string));
 });
 app.use("/", express.static(__dirname + "/../client"));
-app.get("/gifs/*", function (req, res) {
-  let gifid = req.url.replace("/gifs/", "").replace(".gif", "");
-});
-
 const port = process.env.PORT || 3000;
 const hostname: string = process.env.IP || "0.0.0.0";
 const backlog = 511;
@@ -50,6 +46,8 @@ const callback = function () {
 };
 
 init.then(async () => {
+  const updateCount = await PatchLegacyGifs();
+  console.log(`Updated ${updateCount} gifs`);
   server.listen(port as number, hostname, backlog, callback);
   pollForGifsInDrive();
   connectToDiscord();

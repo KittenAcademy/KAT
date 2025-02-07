@@ -3,6 +3,7 @@ import { stringify as csvStringify } from "csv-stringify/sync";
 import { MessageAttachment } from "discord.js";
 import fetch from "node-fetch";
 import { Readable } from "stream";
+import { valid_ext_regex } from "../ext";
 
 interface GifRename {
   id: string;
@@ -46,7 +47,7 @@ const parseRow = (row: string[], index: number): GifRename => {
   const errString = `Could not parse ${index}: ${row}. Every row should have 3 columns: id, oldname.gif, newname.gif`;
   if (row.length != 3) throw errString;
   if (row[0].length == 0 || row[1].length == 0) throw errString;
-  if (!row[2].endsWith(".gif")) throw errString;
+  if (!row[2].match(valid_ext_regex)) throw errString;
   return {
     id: row[0],
     oldName: row[1],

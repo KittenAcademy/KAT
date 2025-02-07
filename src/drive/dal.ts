@@ -1,5 +1,7 @@
 import { drive_v3, google } from "googleapis";
 import driveauth from "./driveauth";
+import { valid_exts } from "../ext";
+import setting from "../settings";
 export type nextPageToken = string | null | undefined;
 
 export const getTagsFromFileName = (fileName: string) => {
@@ -16,7 +18,9 @@ export const getTagsFromFileName = (fileName: string) => {
 export const listRecentlyChangedFiles = async (pageToken: nextPageToken) => {
   const fetchPageResult = await fetchPage(pageToken, {
     orderBy: "modifiedTime desc",
-    q: "mimeType = 'image/gif' and '0BwoBPbVKwbI9TUdFSG0yRjh5UTQ' in parents",
+    q: `(${valid_exts
+      .map((ext) => `mimeType = 'image/${ext}'`)
+      .join(" or ")}) and '${setting("DriveFolderId")}' in parents`,
     pageSize: 5
   });
   if (!fetchPageResult.files) return;
@@ -30,6 +34,7 @@ interface listRecentlyChangedFilesReturn {
 }
 interface filesToTagsInterface extends drive_v3.Schema$File {
   tags?: string[];
+  ext?: string;
 }
 const filesToTags = (files: filesToTagsInterface[]) => {
   for (let i = 0; i < files.length; i++) {
@@ -37,6 +42,7 @@ const filesToTags = (files: filesToTagsInterface[]) => {
     if (!file.name) continue;
     file.name = file.name.toLowerCase().replace(/ /g, "_");
     file.tags = getTagsFromFileName(file.name);
+    file.ext = file.name.split(".").pop();
   }
   return files;
 };
@@ -51,7 +57,8 @@ const fetchPage = async (
     auth: auth
   });
   return new Promise<drive_v3.Schema$FileList>((resolve) => {
-    query.fields = "nextPageToken, files(id, name, md5Checksum, size)";
+    query.fields =
+      "nextPageToken, files(id, name, md5Checksum, size, mimeType)";
     query.spaces = "drive";
     query.pageToken = pageToken;
     // console.log("getting ", query, " from Google drive")

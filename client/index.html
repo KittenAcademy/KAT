@@ -82,14 +82,12 @@
 			}, 10000);
 		}
 
+
 		function ChangeImage() {
 			$.getJSON("/getgifids", function (data) {
 				$('#thegif').attr('src', data[0].filePath);
 				$('#thegiflink').attr('href', data[0].filePath);
-				$('#name').text(data[0].name.replace(/_/g, ' ').replace('.gif', ''));
-				// if (data[0].tags) {
-				//   $('#tags').text(data[0].tags.join('#'));
-				// }
+				$('#name').text(data[0].name.replace(/_/g, ' ').replace(/\.[A-Za-z]+$/, ''));
 				var tags = "";
 				if (data[0].tags) {
 					for (var i = 0; i < data[0].tags.length; i++) {

@@ -1,5 +1,6 @@
 import { createHash } from "crypto";
 import { getURL } from "../cloudFront/cloudFront";
+import { getExt } from "../ext";
 const maxCacheCount = 20;
 const cache: { key: string; data: IGifRow[] }[] = [];
 function hash(csv: string[][]): string {
@@ -30,7 +31,7 @@ export function addEntry(csv: string[][]): string {
   addCache(
     key,
     filtered.map((row) => ({
-      url: getURL(row[0]) + ".gif",
+      url: getURL(row[0], getExt(row[1])!),
       filename: row[1]
     }))
   );
