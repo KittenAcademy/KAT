@@ -43,5 +43,7 @@
 	},
 	"ClientUrl": "http://gifs.kitten.academy",
 	"OptimizerConf": null,
-	"MaxGifSize": 30000000
+	"MaxGifSize": 30000000,
+	"DriveFolderId": "0BwoBPbVKwbI9TUdFSG0yRjh5UTQ",
+	"CloudFrontId": "d2hjowy56oi5vk"
 }

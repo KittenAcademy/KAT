@@ -44,7 +44,7 @@ export const fileUploaded = function (
 };
 
 export const deleteFile = function (key: string): Promise<boolean> {
-  const params = { Bucket: S3_BUCKET, Key: key };
+  const params = { Bucket: S3_BUCKET, Key: key, VersionId: undefined };
   return new Promise((res, rej) => {
     s3.deleteObject(params, function (err, data) {
       if (err) {
