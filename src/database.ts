@@ -102,6 +102,7 @@ export const FindGifByTags = async (
       id: 1,
       name: 1,
       tags: 1,
+      ext: 1,
       score: { $meta: "searchScore" }
     })
     .limit(10);
