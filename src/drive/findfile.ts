@@ -17,6 +17,6 @@ export default async (
   if (!file) return null;
   return {
     ...file,
-    path: getURL(file.id.toString()) + ".gif"
+    path: getURL(file.id, file.ext)
   };
 };

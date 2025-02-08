@@ -45,6 +45,8 @@ export interface settings {
   };
   ClientUrl: string;
   MaxGifSize: number;
+  DriveFolderId: string;
+  CloudFrontId: string;
 }
 export interface settingsGoogle {
   installed: {

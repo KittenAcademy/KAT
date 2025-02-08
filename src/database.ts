@@ -16,14 +16,16 @@ const connectString =
   dbconnection ||
   `mongodb+srv://${dbuser}:${dbpass}@kat.pdpvx.mongodb.net/${dbinstance}?retryWrites=true&w=majority`;
 export const init = mongoose.connect(connectString);
-
+const CURRENT_VERSION = 2;
 const GifsModel = mongoose.model(
   "gifs",
   new mongoose.Schema<IGif>({
     id: { type: String, required: true },
     name: { type: String, required: true },
     tags: { type: [String], required: true },
-    checksum: { type: String }
+    checksum: { type: String },
+    ext: { type: String },
+    version: { type: Number, required: false, default: CURRENT_VERSION }
   })
 );
 
@@ -48,7 +50,8 @@ export const RandomGif = (): Promise<IGif> => {
         } else {
           resolve({
             name: file.name,
-            id: file.id
+            id: file.id,
+            ext: file.ext
           });
         }
       }
@@ -128,6 +131,8 @@ export const AddGif = async (file: IGif) => {
   gif.name = file.name;
   gif.tags = file.tags;
   gif.checksum = file.checksum;
+  gif.version = CURRENT_VERSION;
+  gif.ext = file.ext;
   return gif.save();
 };
 
@@ -315,4 +320,23 @@ export const DeleteCache = function (
       return;
     }
   );
+};
+
+export const PatchLegacyGifs = async (): Promise<number> => {
+  const result = await GifsModel.updateMany(
+    {
+      $or: [
+        { version: { $ne: CURRENT_VERSION } },
+        { version: { $exists: false } }
+      ]
+    },
+    {
+      $set: {
+        version: CURRENT_VERSION,
+        ext: "gif"
+      }
+    }
+  );
+
+  return result.n;
 };

@@ -21,6 +21,7 @@ import https from "https";
 import { deleteFile } from "../s3/s3";
 import { addEntry } from "../files/bulkdownload";
 import { optimize, shouldOptimize } from "../files/optimizer";
+import { valid_ext_regex } from "../ext";
 const client = new Discord.Client({
   restRequestTimeout: 60000,
   intents: [
@@ -242,7 +243,7 @@ const HandleBotCommand = async (
     }
   } else if (payload.moduleName == "renamegif") {
     const [oldName, newName] = payload.command.split(" ");
-    if (!(newName || "").endsWith(".gif")) {
+    if (!(newName || "").match(valid_ext_regex)) {
       await payload.discordMessage.reply(
         "Usage: `!renamegif current_name.gif new_name.gif` or `!renamegif id new_name.gif`"
       );
@@ -251,7 +252,7 @@ const HandleBotCommand = async (
     const file = await RenameGif(oldName, newName);
     if (file && file.name) {
       await payload.discordMessage.reply(
-        `<${getURL(file.id)}.gif> is now \`${file.name}\``
+        `<${getURL(file.id, file.ext)}> is now \`${file.name}\``
       );
       return;
     } else {
@@ -331,7 +332,7 @@ const HandleBotCommand = async (
     const id = payload.command;
     if (!id) {
       await payload.discordMessage.reply(
-        "Usage: `!deletegif <id>` without .gif"
+        "Usage: `!deletegif <id>` without .gif or .webp"
       );
       return;
     }
@@ -343,7 +344,7 @@ const HandleBotCommand = async (
       return;
     }
     await DeleteGif(id);
-    await deleteFile(id + ".gif");
+    await deleteFile(gif.name);
     await payload.discordMessage.reply(
       `Gif \`${id}\` deleted. Hope you had a backup.`
     );

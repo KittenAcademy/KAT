@@ -1,4 +1,3 @@
-import { getURL } from "../cloudFront/cloudFront";
 import { listRecentlyChangedFiles, nextPageToken } from "../drive/dal";
 import {
   FindGif,
@@ -10,50 +9,66 @@ import { fileUploaded, uploadFromStream } from "../s3/s3";
 import drivestream from "../drive/returnstream";
 import driveauth from "../drive/driveauth";
 import setting from "../settings";
-
-export const GetGifURL = (gifid: string) => getURL(gifid + ".gif");
+import { valid_exts } from "../ext";
+import { IGif } from "../types";
 
 export const updateNewGifs = async (nextPage?: nextPageToken) => {
   const recentlyChangedFiles = await listRecentlyChangedFiles(nextPage);
   if (!recentlyChangedFiles || !recentlyChangedFiles.files) return;
-
   nextPage = recentlyChangedFiles.nextPageToken;
   for (let i = 0; i < recentlyChangedFiles.files.length; i++) {
-    const recentlyChangedFile = recentlyChangedFiles.files[i] as any;
-    if (recentlyChangedFile.size! > setting("MaxGifSize")) {
-      console.log(
-        `${recentlyChangedFile.id}/${recentlyChangedFile.name} is too big (${recentlyChangedFile.size})- skipping`
+    const recentlyChangedFile = recentlyChangedFiles.files[i];
+    if (recentlyChangedFile.size! > setting("MaxGifSize")) continue;
+
+    if (
+      !recentlyChangedFile.id ||
+      !recentlyChangedFile.name ||
+      !recentlyChangedFile.md5Checksum ||
+      !recentlyChangedFile.ext ||
+      !recentlyChangedFile.tags ||
+      !recentlyChangedFile.mimeType
+    ) {
+      continue;
+    }
+    if (!valid_exts.includes(recentlyChangedFile.ext)) continue;
+    if (recentlyChangedFile.mimeType != `image/${recentlyChangedFile.ext}`) {
+      console.warn(
+        `File ${recentlyChangedFile.name} is not a ${recentlyChangedFile.ext} file: mimeType is ${recentlyChangedFile.mimeType}`
       );
       continue;
     }
-    if (await FindGifByChecksum(recentlyChangedFile.md5Checksum)) continue;
-    let gif: any;
+    let gif: IGif | undefined;
     if (
       (gif = await FindGif({
-        id: recentlyChangedFile.id
+        id: recentlyChangedFile.id!
       }))
     ) {
       if (!gif.checksum) {
         await UpdateGifChecksum(
-          recentlyChangedFile.id,
-          recentlyChangedFile.md5Checksum
+          recentlyChangedFile.id!,
+          recentlyChangedFile.md5Checksum!
         );
       }
       fileUploaded(
-        `${recentlyChangedFile.id}.gif`,
+        `${recentlyChangedFile.id}.${recentlyChangedFile.ext}`,
         async function (isUploaded: boolean) {
-          if (!isUploaded && recentlyChangedFile.id) {
-            await uploadGif(recentlyChangedFile.id);
+          if (
+            !isUploaded &&
+            recentlyChangedFile.id &&
+            recentlyChangedFile.ext
+          ) {
+            await uploadGif(recentlyChangedFile.id, recentlyChangedFile.ext);
           }
         }
       );
       // TODO check if gif in DB matches what is parsed from the gifDal
-    } else if (recentlyChangedFile.id) {
-      await uploadGif(recentlyChangedFile.id);
+    } else {
+      await uploadGif(recentlyChangedFile.id, recentlyChangedFile.ext);
       await AddGif({
         id: recentlyChangedFile.id,
         name: recentlyChangedFile.name,
         tags: recentlyChangedFile.tags,
+        ext: recentlyChangedFile.ext,
         checksum: recentlyChangedFile.md5Checksum
       });
     }
@@ -70,15 +85,15 @@ export const pollForGifsInDrive = () => {
   }
 };
 
-const uploadGif = async (fileid: string) => {
-  const filename = fileid + ".gif";
+const uploadGif = async (fileid: string, ext: string) => {
+  const filename = fileid + "." + ext;
   const auth = await driveauth();
   return new Promise((resolve, reject) => {
     fileUploaded(filename, function (isUploaded: boolean) {
       if (isUploaded) {
         resolve(null);
       } else {
-        const metatag = "image/jpeg";
+        const metatag = "image/" + ext;
         void drivestream(
           fileid,
           auth,

@@ -7,7 +7,8 @@ describe("pickFileFromArray", () => {
       id: "1",
       name: "test",
       score: 1,
-      tags: []
+      tags: [],
+      ext: "gif"
     };
     const filesArray = [expected];
 

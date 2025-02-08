@@ -37,14 +37,24 @@ describe("database tests", () => {
   });
 
   test("should add and find gif", async () => {
-    const gif = { id: "id1", name: "my_file.gif", tags: ["my", "file"] };
+    const gif = {
+      id: "id1",
+      name: "my_file.gif",
+      tags: ["my", "file"],
+      ext: "gif"
+    };
     await database.AddGif(gif);
     const result = await database.FindGif({ id: "id1" });
     expect(toJson(result)).toMatchObject(gif);
   });
 
   test("should delete gif", async () => {
-    const gif = { id: "id1", name: "my_file.gif", tags: ["my", "file"] };
+    const gif = {
+      id: "id1",
+      name: "my_file.webp",
+      tags: ["my", "file"],
+      ext: "webp"
+    };
     await database.AddGif(gif);
 
     const result = await database.DeleteGif("id1");
@@ -57,19 +67,22 @@ describe("database tests", () => {
       id: "id1",
       name: "my_file.gif",
       tags: ["my", "file"],
-      checksum: "abc123"
+      checksum: "abc123",
+      ext: "gif"
     };
     const gif2 = {
       id: "id2",
       name: "my_file_also.gif",
       tags: ["my", "file", "also"],
-      checksum: "abc456"
+      checksum: "abc456",
+      ext: "gif"
     };
     const gif3 = {
       id: "id3",
       name: "mine_file.gif",
       tags: ["mine", "file"],
-      checksum: "abc789"
+      checksum: "abc789",
+      ext: "gif"
     };
     await Promise.all([gif1, gif2, gif3].map(database.AddGif));
 
@@ -90,7 +103,8 @@ describe("database tests", () => {
       id: "id1",
       name: "my_file.gif",
       tags: ["my", "file"],
-      checksum: "abc123"
+      checksum: "abc123",
+      ext: "gif"
     };
     await database.AddGif(gif);
     const result = await database.FindGifByChecksum("abc123");
@@ -102,7 +116,8 @@ describe("database tests", () => {
       id: "id1",
       name: "my_file.gif",
       tags: ["my", "file"],
-      checksum: "abc123"
+      checksum: "abc123",
+      ext: "gif"
     };
     await database.AddGif(gif);
     await database.UpdateGifChecksum("id1", "def456");
@@ -112,11 +127,17 @@ describe("database tests", () => {
   });
 
   test("should rename gif by name", async () => {
-    const gif = { id: "id1", name: "my_file.gif", tags: ["my", "file"] };
+    const gif = {
+      id: "id1",
+      name: "my_file.gif",
+      tags: ["my", "file"],
+      ext: "gif"
+    };
     const gifWithWeirdId = {
       id: "my_file.gif",
       name: "test.gif",
-      tags: ["test"]
+      tags: ["test"],
+      ext: "gif"
     };
     await database.AddGif(gif);
     await database.AddGif(gifWithWeirdId);
@@ -138,7 +159,12 @@ describe("database tests", () => {
   });
 
   test("should rename gif by id", async () => {
-    const gif = { id: "id1", name: "my_file.gif", tags: ["my", "file"] };
+    const gif = {
+      id: "id1",
+      name: "my_file.gif",
+      tags: ["my", "file"],
+      ext: "gif"
+    };
     await database.AddGif(gif);
 
     const result = await database.RenameGif("id1", "the_new_awesome_file.gif");
@@ -153,13 +179,28 @@ describe("database tests", () => {
 
   test("should find all gifs for tag", async () => {
     const matchingGifs = [
-      { id: "id1", name: "my_file.gif", tags: ["my", "file"] },
-      { id: "id2", name: "other_file.gif", tags: ["other", "file"] },
-      { id: "id3", name: "file_too.gif", tags: ["file", "too"] }
+      { id: "id1", name: "my_file.gif", tags: ["my", "file"], ext: "gif" },
+      {
+        id: "id2",
+        name: "other_file.gif",
+        tags: ["other", "file"],
+        ext: "gif"
+      },
+      { id: "id3", name: "file_too.gif", tags: ["file", "too"], ext: "gif" }
     ];
     const nonMatchingGifs = [
-      { id: "id4", name: "not_a_filet.gif", tags: ["not", "a", "filet"] },
-      { id: "id5", name: "vile_of_nile.gif", tags: ["vile", "of", "nile"] }
+      {
+        id: "id4",
+        name: "not_a_filet.gif",
+        tags: ["not", "a", "filet"],
+        ext: "gif"
+      },
+      {
+        id: "id5",
+        name: "vile_of_nile.gif",
+        tags: ["vile", "of", "nile"],
+        ext: "gif"
+      }
     ];
     await Promise.all(
       [...matchingGifs, ...nonMatchingGifs].map(database.AddGif)
@@ -174,13 +215,13 @@ describe("database tests", () => {
 
   test("should find gifs by name regex", async () => {
     const matchingGifs = [
-      { id: "id1", name: "file_acd.gif", tags: [] },
-      { id: "id2", name: "file_abcd.gif", tags: [] },
-      { id: "id3", name: "file_abbcd.gif", tags: [] }
+      { id: "id1", name: "file_acd.gif", tags: [], ext: "gif" },
+      { id: "id2", name: "file_abcd.gif", tags: [], ext: "gif" },
+      { id: "id3", name: "file_abbcd.gif", tags: [], ext: "gif" }
     ];
     const nonMatchingGifs = [
-      { id: "id4", name: "file_abccd.gif", tags: [] },
-      { id: "id5", name: "file_abc.gif", tags: [] }
+      { id: "id4", name: "file_abccd.gif", tags: [], ext: "gif" },
+      { id: "id5", name: "file_abc.gif", tags: [], ext: "gif" }
     ];
     await Promise.all(
       [...matchingGifs, ...nonMatchingGifs].map(database.AddGif)
@@ -195,12 +236,18 @@ describe("database tests", () => {
 
   test("should bulk rename gifs", async () => {
     const gifs = [
-      { id: "id1", name: "one_file.gif", tags: ["one", "file"] },
-      { id: "id2", name: "other_file.gif", tags: ["other", "file"] },
+      { id: "id1", name: "one_file.gif", tags: ["one", "file"], ext: "gif" },
+      {
+        id: "id2",
+        name: "other_file.gif",
+        tags: ["other", "file"],
+        ext: "gif"
+      },
       {
         id: "id3",
         name: "dont_rename_this.gif",
-        tags: ["dont", "rename", "this"]
+        tags: ["dont", "rename", "this"],
+        ext: "gif"
       }
     ];
     await Promise.all(gifs.map(database.AddGif));
@@ -229,9 +276,14 @@ describe("database tests", () => {
 
   test("should not rename gifs if a new name already exists", async () => {
     const gifs = [
-      { id: "id1", name: "one_file.gif", tags: ["one", "file"] },
-      { id: "id2", name: "other_file.gif", tags: ["other", "file"] },
-      { id: "id3", name: "old_file.gif", tags: ["old", "file"] }
+      { id: "id1", name: "one_file.gif", tags: ["one", "file"], ext: "gif" },
+      {
+        id: "id2",
+        name: "other_file.gif",
+        tags: ["other", "file"],
+        ext: "gif"
+      },
+      { id: "id3", name: "old_file.gif", tags: ["old", "file"], ext: "gif" }
     ];
     await Promise.all(gifs.map(database.AddGif));
     const renames = [
@@ -246,8 +298,8 @@ describe("database tests", () => {
 
   test("should not rename gifs if one of the gifs is not found", async () => {
     const gifs = [
-      { id: "id1", name: "one_file.gif", tags: ["one", "file"] },
-      { id: "id2", name: "other_file.gif", tags: ["other", "file"] }
+      { id: "id1", name: "one_file.gif", tags: ["one", "file"], ext: "gif" },
+      { id: "id2", name: "other_file.gif", tags: ["other", "file"], ext: "gif" }
     ];
     await Promise.all(gifs.map(database.AddGif));
     const renames = [
@@ -269,7 +321,8 @@ const toJson = (dbGif: IGif): IGif => ({
   id: dbGif.id,
   name: dbGif.name,
   tags: [...dbGif.tags],
-  checksum: dbGif.checksum
+  checksum: dbGif.checksum,
+  ext: dbGif.ext
 });
 
 const toJsonSet = (dbGifs: IGif[]): Set<IGif> => new Set(dbGifs.map(toJson));
